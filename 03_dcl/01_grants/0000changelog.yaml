@@ -731,6 +731,42 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260913-actuator-command-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,device,actuators,mqtt,security"
+      comment: Grants the backend scoped access to actuator commands and the MQTT status function.
+      changes:
+        - sqlFile:
+            path: 043_actuator_command.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/043_actuator_command.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260913-actuator-timeout-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,device,actuators,audit,security"
+      comment: Allows the backend to expire actuator commands through the protected function.
+      changes:
+        - sqlFile:
+            path: 044_actuator_timeout.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/044_actuator_timeout.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
       id: 20260914-device-registration-and-linking-grant
       author: Hidro_Smarth
       labels: "BD-01-dev,dcl,grants,device,security,location"
