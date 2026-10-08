@@ -1,6 +1,6 @@
 databaseChangeLog:
   # ============================================================
-  # PROCEDIMIENTOS â€” HIDRO SMART
+  # PROCEDIMIENTOS — HIDRO SMART
   # ============================================================
 
   # 1. Refresh Materialized Views (analytics_support)
