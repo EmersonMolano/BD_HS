@@ -103,6 +103,24 @@ databaseChangeLog:
       rollback:
         - sql: |
             DROP FUNCTION IF EXISTS home.fn_create_home_with_owner(VARCHAR, VARCHAR, VARCHAR, SMALLINT, UUID);
+
+  - changeSet:
+      id: 20260823-fn-cost-business-rules
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,consumption,billing"
+      comment: "Uses the home's tier for the active rate and excludes the monthly fixed charge from per-reading cost."
+      changes:
+        - sqlFile:
+            path: 007_fn_cost_business_rules.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/007_fn_cost_business_rules.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
   - changeSet:
       id: 20260823-fn-user-registration
       author: Hidro_Smarth
@@ -131,6 +149,23 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/01_ddl/06_functions/009_fn_rls_status_checks.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260825-fn-period-cost
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,consumption,billing"
+      comment: "Calculates variable consumption cost and adds the monthly fixed charge once per period."
+      changes:
+        - sqlFile:
+            path: 010_fn_period_cost.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/010_fn_period_cost.rollback.sql
             relativeToChangelogFile: true
             splitStatements: false
             stripComments: false
@@ -236,6 +271,22 @@ databaseChangeLog:
             splitStatements: false
             stripComments: false
   - changeSet:
+      id: 20260825-optimize-date-range-functions
+      author: Hidro_Smarth
+      comment: "Uses half-open timestamp ranges so recorded_at indexes remain usable."
+      changes:
+        - sqlFile:
+            path: 017_optimize_date_queries.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/017_optimize_date_queries.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
       id: 20260825-registration-flows
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,function,security,registration,device"
@@ -266,6 +317,23 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/01_ddl/06_functions/019_fn_device_management.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260827-scoped-security-definers
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,rls,consumption"
+      comment: "Requires home or device authorization when application sessions call SECURITY DEFINER calculations."
+      changes:
+        - sqlFile:
+            path: 020_fn_scoped_calculations.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/020_fn_scoped_calculations.rollback.sql
             relativeToChangelogFile: true
             splitStatements: false
             stripComments: false
@@ -468,6 +536,18 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260902-fn-generate-alert-events
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,alert"
+      comment: "Generates idempotent alert events from active daily and monthly consumption rules."
+      changes:
+        - sqlFile:
+            path: 033_fn_generate_alert_events.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
       id: 20260902-fn-role-management
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,function,security,rbac"
@@ -483,6 +563,42 @@ databaseChangeLog:
             path: ../../05_rollbacks/01_ddl/06_functions/034_fn_role_management.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260904-fn-generate-alert-events-no-reading
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,alert"
+      comment: "Evaluates no-reading alert rules in the periodic alert generation job."
+      changes:
+        - sqlFile:
+            path: 035_fn_generate_alert_events_no_reading.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: 033_fn_generate_alert_events.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20260906-fn-generate-alert-events-consistent
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,alert,integrity"
+      comment: "Unifies periodic alert periods, vacation behavior, no-reading detection and concurrent idempotency."
+      changes:
+        - sqlFile:
+            path: 037_fn_generate_alert_events_consistent.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: 035_fn_generate_alert_events_no_reading.sql
+            relativeToChangelogFile: true
+            splitStatements: false
             stripComments: false
 
   - changeSet:
@@ -568,6 +684,24 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260914-fn-consumption-precision
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,consumption,iot,precision"
+      comment: "Returns consumption accumulations without truncating small flow-meter readings."
+      changes:
+        - sqlFile:
+            path: 052_fn_consumption_precision.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/052_fn_consumption_precision.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
       id: 20260914-fn-device-registration-and-linking
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,function,device,security,location"
@@ -581,6 +715,24 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/01_ddl/06_functions/053_fn_device_registration_and_linking.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260914-fn-consumption-series
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,consumption,analytics"
+      comment: "Adds authorized daily, hourly, monthly and location consumption series."
+      changes:
+        - sqlFile:
+            path: 054_fn_consumption_series.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/054_fn_consumption_series.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
