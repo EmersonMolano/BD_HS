@@ -1,0 +1,89 @@
+databaseChangeLog:
+  # ============================================================
+  # FUNCIONES â€” HIDRO SMART
+  # ============================================================
+
+  # 1. Security Helpers (user_account + home)
+  - changeSet:
+      id: a1b2c3d4-fn-001-security
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security"
+      comment: Creates security helper functions for RLS and access control.
+      changes:
+        - sqlFile:
+            path: 001_fn_security_helpers.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: |
+            DROP FUNCTION IF EXISTS user_account.fn_app_current_user_id();
+            DROP FUNCTION IF EXISTS home.fn_is_home_member(UUID, UUID);
+            DROP FUNCTION IF EXISTS home.fn_is_home_owner(UUID, UUID);
+            DROP FUNCTION IF EXISTS device.fn_can_access_device(UUID, UUID);
+
+  # 2. Consumption Calculations (consumption)
+  - changeSet:
+      id: a1b2c3d4-fn-002-consumption
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,consumption"
+      comment: Creates consumption calculation functions.
+      changes:
+        - sqlFile:
+            path: 002_fn_consumption_calculations.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: |
+            DROP FUNCTION IF EXISTS consumption.fn_calculate_consumption(UUID, DATE, DATE);
+            DROP FUNCTION IF EXISTS consumption.fn_calculate_cost(DECIMAL, UUID, DATE);
+            DROP FUNCTION IF EXISTS consumption.fn_get_daily_consumption(UUID, DATE);
+            DROP FUNCTION IF EXISTS consumption.fn_get_monthly_consumption(UUID, INTEGER, INTEGER);
+
+  # 3. Alert Validation (alert_rate)
+  - changeSet:
+      id: a1b2c3d4-fn-003-alert
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,alert_rate"
+      comment: Creates alert validation functions.
+      changes:
+        - sqlFile:
+            path: 003_fn_alert_validation.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: |
+            DROP FUNCTION IF EXISTS alert_rate.fn_check_threshold(DECIMAL, UUID, DATE);
+            DROP FUNCTION IF EXISTS alert_rate.fn_is_leak_detected(UUID, TIMESTAMPTZ, INTEGER);
+
+  # 4. Vacation Helpers (home)
+  - changeSet:
+      id: a1b2c3d4-fn-004-vacation
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,home"
+      comment: Creates vacation mode helper function.
+      changes:
+        - sqlFile:
+            path: 004_fn_vacation_helpers.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: DROP FUNCTION IF EXISTS home.fn_is_vacation_active(UUID, DATE);
+
+  # 5. Analytics Helpers (analytics_support)
+  - changeSet:
+      id: a1b2c3d4-fn-005-analytics
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,analytics_support"
+      comment: Creates analytics and reporting helper functions.
+      changes:
+        - sqlFile:
+            path: 005_fn_analytics_helpers.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: DROP FUNCTION IF EXISTS analytics_support.fn_get_goal_progress(UUID);
