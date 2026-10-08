@@ -165,6 +165,42 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20260901-session-token-functions-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,session"
+      comment: "Allows the application to use controlled session and refresh-token functions."
+      changes:
+        - sqlFile:
+            path: 023_session_token_functions.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/023_session_token_functions.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260901-password-functions-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,password"
+      comment: "Allows the application to use controlled password operations."
+      changes:
+        - sqlFile:
+            path: 024_password_functions.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/024_password_functions.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
   - changeSet:
       id: 20260904-preference-catalog-read
       author: Hidro_Smarth
@@ -178,6 +214,42 @@ databaseChangeLog:
             stripComments: false
       rollback:
         - sql: REVOKE SELECT ON preference.language, preference.currency FROM hidro_smart_app;
+
+  - changeSet:
+      id: 20260912-session-management-functions-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,auth,sessions"
+      comment: "Grants the backend only the ownership-checked session management functions."
+      changes:
+        - sqlFile:
+            path: 037_session_management_functions.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/037_session_management_functions.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260913-password-reset-context-function-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,auth,password-reset"
+      comment: "Allows the application role to validate the context of a password reset token."
+      changes:
+        - sqlFile:
+            path: 042_password_reset_context.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/042_password_reset_context.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
 
   - changeSet:
       id: 20260914-consumption-series-grant

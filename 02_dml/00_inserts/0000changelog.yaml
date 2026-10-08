@@ -151,3 +151,22 @@ databaseChangeLog:
   # ------------------------------------------------------------
   # PolÃ­tica de contraseÃ±a
   # ------------------------------------------------------------
+
+  - changeSet:
+      id: 20260822-default-password-policy
+      author: Hidro_Smarth
+      labels: "insert,data,password-policy"
+      comment: "Creates the default password policy and sets the 15-minute lockout default."
+      changes:
+        - sqlFile:
+            path: 009_password_policy.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sql: DELETE FROM user_account.password_policy WHERE name = 'Default';
+
+
+  # ------------------------------------------------------------
+  # RBAC
+  # ------------------------------------------------------------
