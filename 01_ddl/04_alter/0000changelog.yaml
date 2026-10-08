@@ -348,6 +348,24 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260913-actuator-command-validation
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,device,actuators,validation"
+      comment: Enforces the valid command set for each actuator type at database level.
+      changes:
+        - sqlFile:
+            path: 023_actuator_command_validation.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/023_actuator_command_validation.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
       id: 20260914-email-verification-pending
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,alter,user_account,security,email"
