@@ -85,3 +85,21 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20260923-remove-support-role
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dml,patch,rbac,roles,tickets"
+      comment: "Removes the standalone Support role because ticket management is integrated into Administrator."
+      changes:
+        - sqlFile:
+            path: 006_remove_support_role.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/02_dml/04_patches/006_remove_support_role.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
