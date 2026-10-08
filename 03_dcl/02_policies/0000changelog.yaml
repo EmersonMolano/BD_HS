@@ -102,6 +102,23 @@ databaseChangeLog:
                 FOR ALL TO hidro_smart_app
                 USING (home.fn_is_home_member(home_id, user_account.fn_app_current_user_id()))
                 WITH CHECK (home.fn_is_home_member(home_id, user_account.fn_app_current_user_id()));
+
+  - changeSet:
+      id: 20260825-ingest-rls-hardening
+      author: Hidro_Smarth
+      comment: "Restricts IoT ingestion to active devices assigned to the submitted home."
+      changes:
+        - sqlFile:
+            path: 004_ingest_rls_hardening.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/02_policies/004_ingest_rls_hardening.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
   - changeSet:
       id: 20260825-rbac-policy-enforcement
       author: Hidro_Smarth
@@ -151,6 +168,40 @@ databaseChangeLog:
             path: ../../05_rollbacks/03_dcl/02_policies/007_private_domain_rls.rollback.sql
             relativeToChangelogFile: true
             splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260829-ingest-security-definer-policy
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,policy,security,rls,ingest,iot"
+      comment: "Validates IoT readings through the protected device-home function and removes broad ingest policies."
+      changes:
+        - sqlFile:
+            path: 008_ingest_security_definer.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/02_policies/008_ingest_security_definer.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260831-device-history-insert-policy
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,policy,security,rls,device"
+      comment: "Restricts device history inserts to authorized managers acting on their own user context."
+      changes:
+        - sqlFile:
+            path: 009_device_history_insert.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/02_policies/009_device_history_insert.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
             stripComments: false
 
   - changeSet:
