@@ -150,3 +150,21 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: false
             stripComments: false
+
+  - changeSet:
+      id: 20260916-trg-sensor-reading-cost
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,trigger,consumption,billing,mini"
+      comment: "Calculates and persists estimated cost for each sensor reading using the current home tariff."
+      changes:
+        - sqlFile:
+            path: 011_trg_sensor_reading_cost.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/08_triggers/011_trg_sensor_reading_cost.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
