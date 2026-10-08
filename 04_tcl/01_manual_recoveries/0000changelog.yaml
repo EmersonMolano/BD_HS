@@ -1,4 +1,4 @@
-databaseChangeLog:
+﻿databaseChangeLog:
   - changeSet:
       id: 6b4b10dc-bd55-4a55-9d10-0a4bf47f4f3f
       author: Hidro_Smarth
