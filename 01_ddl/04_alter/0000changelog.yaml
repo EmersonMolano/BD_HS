@@ -514,3 +514,27 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20260923-validate-iot-metric-constraints
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,device,consumption,iot,integrity"
+      comment: "Validates the existing IoT metric constraints after confirming the current data has no violations."
+      changes:
+        - sqlFile:
+            path: 033_validate_iot_metric_constraints.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/033_validate_iot_metric_constraints.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/032_home_mini_reference_profile.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false

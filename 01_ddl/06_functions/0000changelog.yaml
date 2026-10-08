@@ -753,6 +753,40 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+  - changeSet:
+      id: 20260912-fn-account-lifecycle
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,auth,users"
+      comment: "Adds permission-checked account suspension, reactivation and logical deletion with session revocation."
+      changes:
+        - sqlFile:
+            path: 046_fn_account_lifecycle.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/046_fn_account_lifecycle.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260912-fn-list-managed-users
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,users,pagination"
+      comment: "Adds a permission-checked paginated user listing for the administrative panel without credential data."
+      changes:
+        - sqlFile:
+            path: 047_fn_list_managed_users.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/047_fn_list_managed_users.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
 
   - changeSet:
       id: 20260913-fn-password-reset-context
@@ -965,6 +999,24 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260923-fn-managed-user-overview
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,admin,users,homes,devices,security"
+      comment: "Returns the authorized homes and devices overview for an administrator-selected user."
+      changes:
+        - sqlFile:
+            path: 060_fn_managed_user_overview.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/060_fn_managed_user_overview.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
       id: 20260923-fn-list-home-members
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,function,home,security,privacy"
@@ -992,6 +1044,24 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/01_ddl/06_functions/062_fn_link_device_to_home_by_hardware.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260924-fn-delete-unlinked-device
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,device,security,lifecycle"
+      comment: "Deletes a device only after it has been unlinked from every home."
+      changes:
+        - sqlFile:
+            path: 063_fn_delete_unlinked_device.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/063_fn_delete_unlinked_device.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
