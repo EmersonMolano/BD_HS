@@ -1,6 +1,6 @@
 databaseChangeLog:
   # ============================================================
-  # DOMINIO 1: USUARIOS Y AUTENTICACIÃ“N
+  # DOMINIO 1: USUARIOS Y AUTENTICACIÓN
   # ============================================================
   - changeSet:
       id: a1b2c3d4-001-idx-user-account
@@ -114,7 +114,7 @@ databaseChangeLog:
             stripComments: false
 
   # ============================================================
-  # DOMINIO 7: REPORTES, ANÃLISIS Y SOPORTE
+  # DOMINIO 7: REPORTES, ANÁLISIS Y SOPORTE
   # ============================================================
   - changeSet:
       id: a1b2c3d4-007-idx-analytics-support
@@ -133,7 +133,7 @@ databaseChangeLog:
             stripComments: false
 
   # ============================================================
-  # DOMINIO 8: AUDITORÃA Y LOGS
+  # DOMINIO 8: AUDITORÍA Y LOGS
   # ============================================================
   - changeSet:
       id: a1b2c3d4-008-idx-audit
