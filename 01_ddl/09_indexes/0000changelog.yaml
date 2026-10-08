@@ -170,6 +170,21 @@ databaseChangeLog:
             relativeToChangelogFile: true
             stripComments: false
   - changeSet:
+      id: 20260825-case-insensitive-identity-indexes
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,index,user_account,security"
+      comment: "Prevents duplicate usernames and emails regardless of letter case and enforces one login-attempt row per user."
+      changes:
+        - sqlFile:
+            path: 010_idx_case_insensitive_identity.sql
+            relativeToChangelogFile: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/09_indexes/010_idx_case_insensitive_identity.rollback.sql
+            relativeToChangelogFile: true
+            stripComments: false
+  - changeSet:
       id: 20260826-mv-concurrent-refresh-keys
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,index,materialized-view,performance"
