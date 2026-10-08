@@ -208,6 +208,22 @@ databaseChangeLog:
             splitStatements: true
             stripComments: false
   - changeSet:
+      id: 20260825-retain-history-and-tickets
+      author: Hidro_Smarth
+      comment: "Prevents destructive cascades from deleting readings, histories or support tickets."
+      changes:
+        - sqlFile:
+            path: 014_retain_history_and_tickets.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/014_retain_history_and_tickets.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
       id: 20260826-device-status-integrity
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,alter,device,integrity"
@@ -221,6 +237,41 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/01_ddl/04_alter/016_device_status_integrity.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260827-privacy-retention-tier-fks
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,privacy,integrity,tier"
+      comment: "Preserves privacy evidence and references home tiers to the estratos catalog."
+      changes:
+        - sqlFile:
+            path: 017_privacy_retention_and_tier_fks.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/017_privacy_retention_and_tier_fks.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260902-ticket-assignment
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,support,tickets"
+      comment: "Adds optional support-agent assignment to tickets."
+      changes:
+        - sqlFile:
+            path: 018_ticket_assignment.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/018_ticket_assignment.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
