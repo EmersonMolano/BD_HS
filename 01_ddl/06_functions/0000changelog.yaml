@@ -584,6 +584,24 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260903-fn-list-audit-logs
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,audit,security"
+      comment: "Exposes paginated audit consultation through an authorized security-definer function."
+      changes:
+        - sqlFile:
+            path: 036_fn_list_audit_logs.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/036_fn_list_audit_logs.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
       id: 20260906-fn-generate-alert-events-consistent
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,function,alert,integrity"
@@ -754,6 +772,20 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20260923-fn-list-home-members
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,home,security,privacy"
+      comment: "Lists all authorized home members through a scoped SECURITY DEFINER function without exposing emails."
+      changes:
+        - sqlFile:
+            path: 061_fn_list_home_members.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: DROP FUNCTION IF EXISTS home.fn_list_home_members(UUID);
 
   - changeSet:
       id: 20260923-fn-link-device-by-hardware
