@@ -1,0 +1,13 @@
+databaseChangeLog:
+  # ============================================================
+  # DOMINIO 1: USUARIOS Y AUTENTICACIÃ“N
+  # ============================================================
+  - changeSet:
+      id: a1b2c3d4-004-add-umbral-alerta
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,device"
+      comment: Adds umbral_alerta column to device table.
+      changes:
+        - sql: ALTER TABLE device.device ADD COLUMN IF NOT EXISTS umbral_alerta DECIMAL(10,4) NULL;
+      rollback:
+        - sql: ALTER TABLE device.device DROP COLUMN IF EXISTS umbral_alerta;
