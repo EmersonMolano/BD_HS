@@ -67,3 +67,20 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: false
             stripComments: false
+  - changeSet:
+      id: 20260826-device-status-change-timestamp
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,trigger,device,integrity"
+      comment: "Updates changed_at_status whenever the device status changes."
+      changes:
+        - sqlFile:
+            path: 008_trg_device_status_change.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/08_triggers/008_trg_device_status_change.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
