@@ -899,6 +899,72 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260916-fn-home-billing-profile
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,home,billing,tariffs"
+      comment: "Creates typed homes and synchronizes their national reference tariff."
+      changes:
+        - sqlFile:
+            path: 056_fn_home_billing_profile.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/056_fn_home_billing_profile.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260916-fn-billing-cost-logic
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,consumption,billing,tariffs"
+      comment: "Applies basic-consumption limits and converts sensor liters into billing costs."
+      changes:
+        - sqlFile:
+            path: 057_fn_billing_cost_logic.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20260916-fn-home-people-profile
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,home,billing,mini"
+      comment: "Creates homes with a persisted household size for HidroSmart mini reference calculations."
+      changes:
+        - sqlFile:
+            path: 058_fn_home_people_profile.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/058_fn_home_people_profile.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260916-fn-mini-cost-and-budget-logic
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,consumption,billing,budget,mini"
+      comment: "Calculates simplified m3 costs, real summaries and budget pace using calendar days."
+      changes:
+        - sqlFile:
+            path: 059_fn_mini_cost_and_budget_logic.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/059_fn_mini_cost_and_budget_logic.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
       id: 20260923-fn-list-home-members
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,function,home,security,privacy"
