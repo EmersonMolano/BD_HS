@@ -62,6 +62,22 @@ databaseChangeLog:
       rollback:
         - sql: DROP PROCEDURE IF EXISTS analytics_support.prc_archive_closed_tickets(INTEGER, INTEGER);
   - changeSet:
+      id: 20260825-optimize-daily-summary-date-range
+      author: Hidro_Smarth
+      comment: "Uses an index-friendly timestamp range for daily summary generation."
+      changes:
+        - sqlFile:
+            path: 005_prc_generate_daily_summary_optimized.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/07_procedures/005_prc_generate_daily_summary_optimized.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
       id: 20260826-refresh-materialized-views-concurrently
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,procedure,materialized-view,performance"

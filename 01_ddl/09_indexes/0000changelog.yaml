@@ -185,6 +185,22 @@ databaseChangeLog:
             relativeToChangelogFile: true
             stripComments: false
   - changeSet:
+      id: 20260825-integrity-dedup-indexes
+      author: Hidro_Smarth
+      comment: "Prevents duplicate pending membership requests and active alert rules."
+      changes:
+        - sqlFile:
+            path: 011_integrity_dedup.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/09_indexes/011_integrity_dedup.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
       id: 20260826-mv-concurrent-refresh-keys
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,index,materialized-view,performance"
@@ -198,6 +214,23 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/01_ddl/09_indexes/012_mv_concurrent_refresh_keys.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260906-alert-event-dedup-index
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,index,alert,integrity"
+      comment: "Prevents concurrent duplicate alert events for the same rule, home and logical period/device key."
+      changes:
+        - sqlFile:
+            path: 013_alert_event_dedup.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/09_indexes/013_alert_event_dedup.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
