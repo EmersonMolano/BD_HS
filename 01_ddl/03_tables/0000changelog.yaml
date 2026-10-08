@@ -122,3 +122,63 @@ databaseChangeLog:
   # ============================================================
   # 🟡 DOMINIO 7: REPORTES, ANÁLISIS Y SOPORTE (analytics_support)
   # ============================================================
+
+  - changeSet:
+      id: 6798b2fd-1047-4c48-84fe-c5a7f9961491
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,base,analytics_support"
+      comment: Creates the baseline tables for the reports, analytics and support domain.
+      changes:
+        - sqlFile:
+            path: 007_Reports_analytics_support.sql
+            relativeToChangelogFile: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/03_tables/007_Reports_analytics_support.rollback.sql
+            relativeToChangelogFile: true
+            stripComments: false
+
+  # ============================================================
+  # DOMINIO 8: AUDITORÍA Y LOGS (audit)
+  # ============================================================
+
+  - changeSet:
+      id: c150e8df-1bde-4cb8-969e-0c8d634bcb49
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,base,audit_log"
+      comment: Creates the baseline tables for the audit and logs domain.
+      changes:
+        - sqlFile:
+            path: 008_Audit_logs.sql
+            relativeToChangelogFile: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/03_tables/008_Audit_logs.rollback.sql
+            relativeToChangelogFile: true
+            stripComments: false
+
+  # ============================================================
+  # DOMINIO 9: PRIVACIDAD Y ARCO (privacy)
+  # ============================================================
+
+  - changeSet:
+      id: c00bd110-c9b0-4126-9f20-6b22fbf27579
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,base,privacy"
+      comment: Creates the baseline tables for the privacy and ARCO domain.
+      changes:
+        - sqlFile:
+            path: 009_Privacy_arco.sql
+            relativeToChangelogFile: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/03_tables/009_Privacy_arco.rollback.sql
+            relativeToChangelogFile: true
+            stripComments: false
+
+  # ============================================================
+  # DOMINIO 10: ESTADO Y COMANDOS DE ACTUADORES (device)
+  # ============================================================
