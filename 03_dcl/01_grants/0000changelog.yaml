@@ -472,6 +472,24 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20260903-audit-read-function-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,audit"
+      comment: "Allows the application to consult audit logs only through the authorized function."
+      changes:
+        - sqlFile:
+            path: 030_audit_read_function.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/030_audit_read_function.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
   - changeSet:
       id: 20260904-preference-catalog-read
       author: Hidro_Smarth
