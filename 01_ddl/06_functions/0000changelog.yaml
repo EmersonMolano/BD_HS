@@ -338,6 +338,23 @@ databaseChangeLog:
             splitStatements: false
             stripComments: false
   - changeSet:
+      id: 20260829-fn-ingest-validation
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,rls,ingest,iot"
+      comment: "Validates IoT device-home pairs through a SECURITY DEFINER function without global SELECT access."
+      changes:
+        - sqlFile:
+            path: 021_fn_ingest_validation.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/021_fn_ingest_validation.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
       id: 20260829-fn-home-member-management
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,function,home,security,rbac"
@@ -646,6 +663,78 @@ databaseChangeLog:
             stripComments: false
       rollback:
         - sql: DROP FUNCTION IF EXISTS user_account.fn_bootstrap_first_administrator(UUID);
+
+  - changeSet:
+      id: 20260912-fn-auth-and-iot-ingest
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,auth,iot"
+      comment: "Adds controlled email verification, active-session validation and idempotent IoT ingestion."
+      changes:
+        - sqlFile:
+            path: 040_fn_auth_and_iot_ingest.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/040_fn_auth_and_iot_ingest.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260912-fn-iot-ingest-returning-fix
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,iot,bugfix"
+      comment: "Qualifies the reading id returned by idempotent IoT ingestion."
+      changes:
+        - sqlFile:
+            path: 042_fn_iot_ingest_returning_fix.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/042_fn_iot_ingest_returning_fix.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20260912-fn-iot-ingest-metrics-and-timestamps
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,iot,integrity,telemetry"
+      comment: "Persists sensor metrics, separates measured and received timestamps and rejects ambiguous device assignments."
+      changes:
+        - sqlFile:
+            path: 043_fn_iot_ingest_metrics_and_timestamps.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/043_fn_iot_ingest_metrics_and_timestamps.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260912-fn-device-status-ingest
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,device,iot,telemetry"
+      comment: "Persists MQTT connectivity status and device telemetry without changing administrative status."
+      changes:
+        - sqlFile:
+            path: 044_fn_device_status_ingest.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/044_fn_device_status_ingest.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
 
   - changeSet:
       id: 20260912-fn-session-management

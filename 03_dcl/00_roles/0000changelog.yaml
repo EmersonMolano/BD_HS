@@ -16,6 +16,19 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260823-create-ingest-role
+      author: Hidro_Smarth
+      comment: "Creates the least-privilege PostgreSQL role used by IoT ingestion."
+      changes:
+        - sqlFile:
+            path: 002_create_ingest_role.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: DROP ROLE IF EXISTS hidro_smart_ingest;
+
+  - changeSet:
       id: 20260906-role-timezone-defaults
       author: Hidro_Smarth
       labels: "BD-01-dev,dcl,roles,timezone"

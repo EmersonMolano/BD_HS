@@ -77,6 +77,22 @@ databaseChangeLog:
             relativeToChangelogFile: true
             stripComments: false
   - changeSet:
+      id: 20260823-ingest-grants
+      author: Hidro_Smarth
+      comment: "Grants only sensor-reading ingestion permissions to the IoT role."
+      changes:
+        - sqlFile:
+            path: 003_grants_ingest.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/003_grants_ingest.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
       id: 20260823-registration-function-grant
       author: Hidro_Smarth
       comment: "Allows the application to register users through the controlled function instead of direct INSERT RETURNING."
@@ -333,6 +349,40 @@ databaseChangeLog:
             splitStatements: true
             stripComments: false
   - changeSet:
+      id: 20260828-ingest-references
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,ingest,iot,security"
+      comment: "Allows the IoT role to validate the sensor-reading foreign key against home_device."
+      changes:
+        - sqlFile:
+            path: 019_grant_ingest_references.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/019_grant_ingest_references.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260829-ingest-minimum-privileges
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,ingest,iot"
+      comment: "Grants only the schema, FK and function privileges required by IoT ingestion."
+      changes:
+        - sqlFile:
+            path: 020_ingest_minimum_privileges.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/020_ingest_minimum_privileges.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
       id: 20260831-device-history-insert-grant
       author: Hidro_Smarth
       labels: "BD-01-dev,dcl,grants,security,device"
@@ -539,6 +589,78 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260912-auth-and-iot-functions-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,auth,iot"
+      comment: "Allows the backend to use only controlled email, session and IoT ingestion functions."
+      changes:
+        - sqlFile:
+            path: 033_auth_and_iot_functions.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/033_auth_and_iot_functions.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260912-auth-hardening-functions-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,auth"
+      comment: "Allows logout only through the ownership-checked security-definer function."
+      changes:
+        - sqlFile:
+            path: 034_auth_hardening_functions.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/034_auth_hardening_functions.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260912-iot-ingest-metrics-function-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,iot,telemetry,security"
+      comment: "Allows the backend to persist validated IoT metrics through the controlled ingestion function."
+      changes:
+        - sqlFile:
+            path: 035_iot_ingest_metrics_function.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/035_iot_ingest_metrics_function.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260912-device-status-ingest-function-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,device,iot,security"
+      comment: "Allows MQTT status handlers to persist connectivity telemetry through a controlled function."
+      changes:
+        - sqlFile:
+            path: 036_device_status_ingest_function.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/036_device_status_ingest_function.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
       id: 20260912-session-management-functions-grant
       author: Hidro_Smarth
       labels: "BD-01-dev,dcl,grants,security,auth,sessions"
@@ -552,6 +674,40 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/03_dcl/01_grants/037_session_management_functions.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260913-telemetry-ingest-function-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,iot,security"
+      comment: "Allows the dedicated MQTT ingestion role to execute the controlled telemetry function."
+      changes:
+        - sqlFile:
+            path: 040_telemetry_ingest_function.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/040_telemetry_ingest_function.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260913-revoke-ingest-direct-insert
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,iot,security"
+      comment: "Removes direct table insertion from the MQTT ingestion role."
+      changes:
+        - sqlFile:
+            path: 041_revoke_ingest_direct_insert.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/041_revoke_ingest_direct_insert.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
