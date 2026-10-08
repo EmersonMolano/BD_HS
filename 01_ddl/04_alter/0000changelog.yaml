@@ -189,3 +189,93 @@ databaseChangeLog:
             ALTER TABLE alert_rate.alert_rule ADD CONSTRAINT alert_rule_created_by_fkey FOREIGN KEY (created_by) REFERENCES user_account.user_account(user_account_id);
             ALTER TABLE analytics_support.recommendation ADD CONSTRAINT recommendation_created_by_fkey FOREIGN KEY (created_by) REFERENCES user_account.user_account(user_account_id);
             ALTER TABLE privacy.arco_request ADD CONSTRAINT arco_request_answered_by_fkey FOREIGN KEY (answered_by) REFERENCES user_account.user_account(user_account_id);
+
+  - changeSet:
+      id: 20260825-mfa-protection
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,user_account,security"
+      comment: "Adds protected MFA ciphertext and backup-code hash fields while retaining legacy columns for migration."
+      changes:
+        - sqlFile:
+            path: 013_mfa_protection.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/013_mfa_protection.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260903-document-number-max-10
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,user-profile,validation"
+      comment: "Restricts document numbers to numeric values with a maximum of 10 digits."
+      changes:
+        - sqlFile:
+            path: 019_document_number_max_10.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/019_document_number_max_10.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260914-email-verification-pending
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,user_account,security,email"
+      comment: "Allows Pending accounts and preserves the suspension invariant while email verification is pending."
+      changes:
+        - sqlFile:
+            path: 024_email_verification_pending.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/024_email_verification_pending.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260914-profile-avatar
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,user_account,user-profile"
+      comment: "Adds the optional profile avatar data URL."
+      changes:
+        - sqlFile:
+            path: 025_profile_avatar.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/025_profile_avatar.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260914-profile-phone-max-60
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,user_account,user-profile,validation"
+      comment: "Allows phone values up to 60 characters for international formats."
+      changes:
+        - sqlFile:
+            path: 026_profile_phone_max_60.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/026_profile_phone_max_60.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
