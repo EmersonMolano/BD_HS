@@ -92,6 +92,24 @@ databaseChangeLog:
             GRANT INSERT ON user_account.user_account TO hidro_smart_app;
 
   - changeSet:
+      id: 20260824-security-hardening
+      author: Hidro_Smarth
+      comment: "Restricts reporting access to secrets and removes PUBLIC execution from privileged functions."
+      changes:
+        - sqlFile:
+            path: 004_security_hardening.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sql: |
+            GRANT SELECT ON user_account.user_credential, user_account.password_reset_token, user_account.token, user_account.session, user_account.user_mfa, user_account.login_attempt, user_account.role_permission, privacy.user_consent, privacy.arco_request, audit.audit_log, audit.log_error TO hidro_smart_readonly;
+            GRANT SELECT ON user_account.user_credential, user_account.password_reset_token, user_account.token, user_account.user_mfa TO hidro_smart_app;
+            GRANT EXECUTE ON FUNCTION user_account.fn_register_user(VARCHAR, VARCHAR) TO PUBLIC;
+            GRANT EXECUTE ON FUNCTION home.fn_create_home_with_owner(VARCHAR, VARCHAR, VARCHAR, SMALLINT, UUID) TO PUBLIC;
+            GRANT EXECUTE ON FUNCTION consumption.fn_calculate_cost(DECIMAL, UUID, DATE) TO PUBLIC;
+
+  - changeSet:
       id: 20260824-grant-hourly-mv
       author: Hidro_Smarth
       comment: "Grants explicit read access to the home-scoped hourly consumption materialized view."
@@ -116,6 +134,70 @@ databaseChangeLog:
       rollback:
         - sql: REVOKE EXECUTE ON FUNCTION consumption.fn_calculate_period_cost(UUID, DATE, DATE) FROM hidro_smart_app;
   - changeSet:
+      id: 20260825-grant-login-security
+      author: Hidro_Smarth
+      comment: "Restricts login-attempt helper functions to the application role."
+      changes:
+        - sqlFile:
+            path: 007_grant_login_security.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/007_grant_login_security.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260825-least-privilege-auth-rbac
+      author: Hidro_Smarth
+      comment: "Removes direct application access to sensitive authentication, RBAC and audit tables."
+      changes:
+        - sqlFile:
+            path: 008_grant_least_privilege_auth_rbac.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/008_grant_least_privilege_auth_rbac.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260825-fn-cost-rollback-guard
+      author: Hidro_Smarth
+      comment: "Keeps the cost function grant rollback-safe before technical roles are removed."
+      changes:
+        - sqlFile:
+            path: 009_fn_cost_rollback_guard.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/009_fn_cost_rollback_guard.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260825-revoke-sensitive-token-crud
+      author: Hidro_Smarth
+      comment: "Removes direct application CRUD over password-reset tokens, JWT tokens and sessions."
+      changes:
+        - sqlFile:
+            path: 010_revoke_sensitive_token_crud.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/010_revoke_sensitive_token_crud.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
       id: 20260825-explicit-app-table-privileges
       author: Hidro_Smarth
       comment: "Replaces broad application CRUD with explicit table privileges and removes direct MV exposure."
@@ -128,6 +210,23 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/03_dcl/01_grants/011_grant_app_table_privileges.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260825-registration-flow-grants
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,registration,device"
+      comment: "Allows controlled user/device registration and removes direct device INSERT from the application role."
+      changes:
+        - sqlFile:
+            path: 012_grant_registration_flows.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/012_grant_registration_flows.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
@@ -162,6 +261,74 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/03_dcl/01_grants/014_readonly_reporting_privileges.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260826-revoke-public-security-definers
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,functions"
+      comment: "Removes PUBLIC execution from SECURITY DEFINER helpers and grants only required application execution."
+      changes:
+        - sqlFile:
+            path: 015_revoke_public_security_definers.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/015_revoke_public_security_definers.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260827-restrict-privacy-table-writes
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,privacy"
+      comment: "Makes consent records append-only from the application and prevents direct deletion of ARCO requests."
+      changes:
+        - sqlFile:
+            path: 016_restrict_privacy_table_writes.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/016_restrict_privacy_table_writes.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260827-revoke-scope-helpers-public
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,functions"
+      comment: "Removes PUBLIC execution from the home and device authorization helpers."
+      changes:
+        - sqlFile:
+            path: 017_revoke_scope_helpers_public.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/017_revoke_scope_helpers_public.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260827-secure-materialized-view-access
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,reporting,rls"
+      comment: "Removes direct multi-home materialized-view access; reporting is exposed through home-scoped security-definer functions."
+      changes:
+        - sqlFile:
+            path: 018_secure_mv_access.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/018_secure_mv_access.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
@@ -202,6 +369,58 @@ databaseChangeLog:
             splitStatements: true
             stripComments: false
   - changeSet:
+      id: 20260901-auth-security-function-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,password"
+      comment: "Grants the application access to login security state through a controlled function."
+      changes:
+        - sqlFile:
+            path: 025_auth_security_function.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/025_auth_security_function.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260901-active-password-policy-function-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,password"
+      comment: "Grants the backend access to the active password policy function."
+      changes:
+        - sqlFile:
+            path: 026_active_password_policy_function.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/026_active_password_policy_function.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260902-role-management-functions-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,rbac"
+      comment: "Grants role management only through controlled functions."
+      changes:
+        - sqlFile:
+            path: 028_role_management_functions.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/028_role_management_functions.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
       id: 20260904-preference-catalog-read
       author: Hidro_Smarth
       labels: "BD-01-dev,dcl,grants,preference,security"
@@ -214,6 +433,40 @@ databaseChangeLog:
             stripComments: false
       rollback:
         - sql: REVOKE SELECT ON preference.language, preference.currency FROM hidro_smart_app;
+  - changeSet:
+      id: 20260906-authorization-context-function-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,rbac"
+      comment: "Allows the authenticated session to read only its own functional authorization context."
+      changes:
+        - sqlFile:
+            path: 031_authorization_context_function.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/031_authorization_context_function.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260906-final-security-hardening
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,least-privilege"
+      comment: "Removes remaining direct account/RBAC mutation surfaces and PUBLIC maintenance execution."
+      changes:
+        - sqlFile:
+            path: 032_final_security_hardening.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/032_final_security_hardening.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
 
   - changeSet:
       id: 20260912-session-management-functions-grant
