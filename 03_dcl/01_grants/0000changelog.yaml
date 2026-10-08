@@ -437,6 +437,24 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20260902-alert-generation-function-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,alert"
+      comment: "Allows the backend job to generate alert events through a controlled function."
+      changes:
+        - sqlFile:
+            path: 027_alert_generation_function.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/027_alert_generation_function.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
   - changeSet:
       id: 20260902-role-management-functions-grant
       author: Hidro_Smarth

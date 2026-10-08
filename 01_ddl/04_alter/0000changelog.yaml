@@ -244,6 +244,24 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260906-alert-rule-units-event-dedup
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,alert,integrity"
+      comment: "Aligns alert rule units with alert types and adds a deterministic deduplication key to alert events."
+      changes:
+        - sqlFile:
+            path: 020_alert_rule_units_and_event_dedup.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/020_alert_rule_units_and_event_dedup.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
       id: 20260914-email-verification-pending
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,alter,user_account,security,email"
@@ -293,6 +311,42 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/01_ddl/04_alter/026_profile_phone_max_60.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260914-consumption-precision
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,consumption,iot,precision"
+      comment: "Preserves sub-liter caudalimetro readings and rebuilds dependent materialized views."
+      changes:
+        - sqlFile:
+            path: 027_consumption_precision.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/027_consumption_precision.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260914-device-location
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,device,location"
+      comment: "Adds the visible physical location of an IoT device."
+      changes:
+        - sqlFile:
+            path: 028_device_location.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/028_device_location.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
