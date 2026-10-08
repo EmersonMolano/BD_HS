@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260823-ingest-rls-policy
+      author: Hidro_Smarth
+      comment: "Allows the isolated ingestion role to insert sensor readings only."
+      changes:
+        - sql: |
+            CREATE POLICY sensor_reading_ingest_insert ON consumption.sensor_reading
+                FOR INSERT TO hidro_smart_ingest
+                WITH CHECK (TRUE);
+      rollback:
+        - sql: DROP POLICY IF EXISTS sensor_reading_ingest_insert ON consumption.sensor_reading;
+
+  - changeSet:
+      id: 20260823-device-home-write-rls
+      author: Hidro_Smarth
+      comment: "Allows controlled backend creation of devices and owner-controlled home-device assignments."
+      changes:
+        - sql: |
+            CREATE POLICY device_backend_insert ON device.device
+                FOR INSERT TO hidro_smart_app WITH CHECK (TRUE);
+            CREATE POLICY home_device_owner_insert ON home.home_device
+                FOR INSERT TO hidro_smart_app
+                WITH CHECK (home.fn_is_home_owner(home_id, user_account.fn_app_current_user_id()));
+            CREATE POLICY home_device_owner_update_delete ON home.home_device
+                FOR UPDATE TO hidro_smart_app
+                USING (home.fn_is_home_owner(home_id, user_account.fn_app_current_user_id()))
+                WITH CHECK (home.fn_is_home_owner(home_id, user_account.fn_app_current_user_id()));
+            CREATE POLICY home_device_owner_delete ON home.home_device
+                FOR DELETE TO hidro_smart_app
+                USING (home.fn_is_home_owner(home_id, user_account.fn_app_current_user_id()));
+      rollback:
+        - sql: |
+            DROP POLICY IF EXISTS home_device_owner_delete ON home.home_device;
+            DROP POLICY IF EXISTS home_device_owner_update_delete ON home.home_device;
+            DROP POLICY IF EXISTS home_device_owner_insert ON home.home_device;
+            DROP POLICY IF EXISTS device_backend_insert ON device.device;
+
+  - changeSet:
+      id: 20260824-home-membership-rls-hardening
+      author: Hidro_Smarth
+      comment: "Separates home membership read access from owner-only membership mutations."
+      changes:
+        - sql: |
+            DROP POLICY IF EXISTS home_user_member_access ON home.home_user;
+            CREATE POLICY home_user_member_select ON home.home_user FOR SELECT TO hidro_smart_app USING (home.fn_is_home_member(home_id, user_account.fn_app_current_user_id()));
+            CREATE POLICY home_user_owner_insert ON home.home_user FOR INSERT TO hidro_smart_app WITH CHECK (home.fn_is_home_owner(home_id, user_account.fn_app_current_user_id()));
+            CREATE POLICY home_user_owner_update ON home.home_user FOR UPDATE TO hidro_smart_app USING (home.fn_is_home_owner(home_id, user_account.fn_app_current_user_id())) WITH CHECK (home.fn_is_home_owner(home_id, user_account.fn_app_current_user_id()));
+            CREATE POLICY home_user_owner_delete ON home.home_user FOR DELETE TO hidro_smart_app USING (home.fn_is_home_owner(home_id, user_account.fn_app_current_user_id()));
+      rollback:
+        - sql: |
+            DROP POLICY IF EXISTS home_user_owner_delete ON home.home_user;
+            DROP POLICY IF EXISTS home_user_owner_update ON home.home_user;
+            DROP POLICY IF EXISTS home_user_owner_insert ON home.home_user;
+            DROP POLICY IF EXISTS home_user_member_select ON home.home_user;
+            CREATE POLICY home_user_member_access ON home.home_user
+                FOR ALL TO hidro_smart_app
+                USING (home.fn_is_home_member(home_id, user_account.fn_app_current_user_id()))
+                WITH CHECK (home.fn_is_home_member(home_id, user_account.fn_app_current_user_id()));
