@@ -678,6 +678,40 @@ databaseChangeLog:
             splitStatements: true
             stripComments: false
   - changeSet:
+      id: 20260912-account-lifecycle-functions-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,auth,users"
+      comment: "Grants the backend only the controlled account lifecycle functions."
+      changes:
+        - sqlFile:
+            path: 038_account_lifecycle_functions.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/038_account_lifecycle_functions.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260912-list-managed-users-function-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,security,users,pagination"
+      comment: "Grants the backend the controlled paginated administrative user listing."
+      changes:
+        - sqlFile:
+            path: 039_list_managed_users_function.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/039_list_managed_users_function.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
       id: 20260913-telemetry-ingest-function-grant
       author: Hidro_Smarth
       labels: "BD-01-dev,dcl,grants,iot,security"
@@ -882,6 +916,74 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/03_dcl/01_grants/051_home_mini_budget.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260923-managed-user-overview-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,admin,users,homes,devices,security"
+      comment: "Grants the application role controlled access to the administrator user overview function."
+      changes:
+        - sqlFile:
+            path: 052_managed_user_overview.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/052_managed_user_overview.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260923-home-members-list-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,home,security,privacy"
+      comment: "Allows the application to list names and roles of members for an authorized home."
+      changes:
+        - sqlFile:
+            path: 053_home_members_list.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sql: REVOKE EXECUTE ON FUNCTION home.fn_list_home_members(UUID) FROM hidro_smart_app;
+
+  - changeSet:
+      id: 20260923-device-link-by-hardware-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,device,iot,hardware,security"
+      comment: "Allows the application role to link an active device by hardwareId."
+      changes:
+        - sqlFile:
+            path: 054_device_link_by_hardware.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/054_device_link_by_hardware.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260924-device-delete-unlinked-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,device,security,lifecycle"
+      comment: "Allows controlled deletion of devices that are no longer linked to a home."
+      changes:
+        - sqlFile:
+            path: 055_device_delete_unlinked.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/055_device_delete_unlinked.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
