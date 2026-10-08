@@ -1,5 +1,50 @@
 databaseChangeLog:
   - changeSet:
+      id: d00809f0-e1d2-4c3b-a4b5-c6d7e8f90001
+      author: Hidro_Smarth
+      comment: "Enable row-level security and create row access policies."
+      changes:
+        - sqlFile:
+            path: 001_rls_policies.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/02_policies/001_rls_policies.rollback.sql
+            relativeToChangelogFile: true
+            stripComments: false
+  - changeSet:
+      id: 20260821-readonly-rls-policies
+      author: Hidro_Smarth
+      comment: "Allow the read-only reporting role to read RLS-protected tables."
+      changes:
+        - sqlFile:
+            path: 002_readonly_rls_policies.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/02_policies/002_readonly_rls_policies.rollback.sql
+            relativeToChangelogFile: true
+            stripComments: false
+  - changeSet:
+      id: 20260822-domain-rls-policies
+      author: Hidro_Smarth
+      comment: "Protect user, home, consumption, alert and support data with RLS."
+      changes:
+        - sqlFile:
+            path: 003_rls_domain_tables.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/02_policies/003_rls_domain_tables.rollback.sql
+            relativeToChangelogFile: true
+            stripComments: false
+  - changeSet:
       id: 20260823-ingest-rls-policy
       author: Hidro_Smarth
       comment: "Allows the isolated ingestion role to insert sensor readings only."
@@ -57,3 +102,53 @@ databaseChangeLog:
                 FOR ALL TO hidro_smart_app
                 USING (home.fn_is_home_member(home_id, user_account.fn_app_current_user_id()))
                 WITH CHECK (home.fn_is_home_member(home_id, user_account.fn_app_current_user_id()));
+  - changeSet:
+      id: 20260825-rbac-policy-enforcement
+      author: Hidro_Smarth
+      comment: "Makes row-level writes depend on the functional RBAC permissions."
+      changes:
+        - sqlFile:
+            path: 005_rbac_policy_enforcement.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/02_policies/005_rbac_policy_enforcement.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260826-device-update-scope
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,policy,device,security,rls"
+      comment: "Requires devices.manage and active home membership when updating a device."
+      changes:
+        - sqlFile:
+            path: 006_device_update_scope.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/02_policies/006_device_update_scope.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260827-private-domain-rls
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,policy,security,rls,privacy,device,home"
+      comment: "Adds row-level isolation to private profile, membership, IoT history and privacy tables."
+      changes:
+        - sqlFile:
+            path: 007_private_domain_rls.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/02_policies/007_private_domain_rls.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false

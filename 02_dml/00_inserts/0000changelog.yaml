@@ -170,3 +170,21 @@ databaseChangeLog:
   # ------------------------------------------------------------
   # RBAC
   # ------------------------------------------------------------
+
+  - changeSet:
+      id: 20260825-rbac-permissions
+      author: Hidro_Smarth
+      labels: "insert,data,rbac,security"
+      comment: "Seeds functional permissions and maps them to Administrator, Support, HomeUser and Guest."
+      changes:
+        - sqlFile:
+            path: 010_rbac_permissions.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/02_dml/00_inserts/010_rbac_permissions.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
