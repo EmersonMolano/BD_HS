@@ -188,3 +188,51 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20260916-home-billing-references
+      author: Hidro_Smarth
+      labels: "insert,data,home,billing,tariffs,benchmarks"
+      comment: "Seeds national reference tariffs and consumption benchmarks for residential and non-residential homes."
+      changes:
+        - sqlFile:
+            path: 011_home_billing_references.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/02_dml/00_inserts/011_home_billing_references.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260916-home-billing-reference-excess-fix
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dml,home,billing,tariffs"
+      comment: "Normalizes the single-rate categories so E5, E6 and non-residential use do not expose a misleading excess rate."
+      changes:
+        - sqlFile:
+            path: 012_home_billing_reference_excess_fix.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260916-hidrosmart-mini-defaults
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dml,home,billing,mini,tariffs"
+      comment: "Applies the simplified configurable consumption and tariff defaults for HidroSmart mini."
+      changes:
+        - sqlFile:
+            path: 013_hidrosmart_mini_defaults.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/02_dml/00_inserts/013_hidrosmart_mini_defaults.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
