@@ -773,6 +773,42 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260913-fn-actuator-status
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,device,actuators,mqtt"
+      comment: Persists actuator status events and acknowledges matching commands.
+      changes:
+        - sqlFile:
+            path: 049_fn_actuator_status.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/049_fn_actuator_status.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260913-fn-timeout-actuator-commands
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,device,actuators,audit"
+      comment: Marks actuator commands without ACK as timed out and records the transition in audit.
+      changes:
+        - sqlFile:
+            path: 050_fn_timeout_actuator_commands.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/050_fn_timeout_actuator_commands.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
       id: 20260914-fn-registration-email-verification
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,function,user_account,security,email"
