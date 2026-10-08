@@ -1,7 +1,7 @@
 databaseChangeLog:
 
   # ============================================================
-  # DML INSERTS â€” DATOS BASE DEL SISTEMA
+  # DML INSERTS — DATOS BASE DEL SISTEMA
   # ============================================================
 
   # ------------------------------------------------------------
@@ -95,7 +95,7 @@ databaseChangeLog:
 
 
   # ------------------------------------------------------------
-  # CategorÃ­as de tickets
+  # Categorías de tickets
   # ------------------------------------------------------------
 
   - changeSet:
@@ -109,7 +109,7 @@ databaseChangeLog:
             relativeToChangelogFile: true
             stripComments: false
       rollback:
-        - sql: DELETE FROM analytics_support.ticket_category WHERE name IN ('Dispositivo', 'Reportes', 'Tarifas', 'DetecciÃ³n', 'Otros');
+        - sql: DELETE FROM analytics_support.ticket_category WHERE name IN ('Dispositivo', 'Reportes', 'Tarifas', 'Detección', 'Otros');
 
 
   # ------------------------------------------------------------
@@ -149,7 +149,7 @@ databaseChangeLog:
 
 
   # ------------------------------------------------------------
-  # PolÃ­tica de contraseÃ±a
+  # Política de contraseña
   # ------------------------------------------------------------
 
   - changeSet:
