@@ -1,6 +1,6 @@
 databaseChangeLog:
   # ============================================================
-  # DOMINIO 1: USUARIOS Y AUTENTICACIÃ“N
+  # DOMINIO 1: USUARIOS Y AUTENTICACIÓN
   # ============================================================
   - changeSet:
       id: a1b2c3d4-001-fk-user-account
@@ -76,7 +76,7 @@ databaseChangeLog:
             stripComments: false
 
   # ============================================================
-  # DOMINIO 7: REPORTES, ANÃLISIS Y SOPORTE
+  # DOMINIO 7: REPORTES, ANÁLISIS Y SOPORTE
   # ============================================================
   - changeSet:
       id: a1b2c3d4-007-fk-analytics-support
