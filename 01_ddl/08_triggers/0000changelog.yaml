@@ -49,3 +49,21 @@ databaseChangeLog:
         - sql: |
             DROP TRIGGER IF EXISTS trg_audit_user_account ON user_account.user_account;
             DROP FUNCTION IF EXISTS user_account.fn_audit_user_account();
+
+  - changeSet:
+      id: 20260825-home-owner-invariant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,trigger,home,integrity"
+      comment: "Prevents a home from ending a transaction without an Owner."
+      changes:
+        - sqlFile:
+            path: 006_trg_home_owner_invariant.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/08_triggers/006_trg_home_owner_invariant.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
