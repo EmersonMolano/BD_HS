@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260828-homeuser-device-permission
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dml,patch,rbac,device,security"
+      comment: "Allows HomeUser to register devices through the scoped registration function."
+      changes:
+        - sqlFile:
+            path: 004_homeuser_device_permission.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/02_dml/04_patches/004_homeuser_device_permission.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false

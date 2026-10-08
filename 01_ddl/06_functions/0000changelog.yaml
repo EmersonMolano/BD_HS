@@ -87,6 +87,22 @@ databaseChangeLog:
             stripComments: false
       rollback:
         - sql: DROP FUNCTION IF EXISTS analytics_support.fn_get_goal_progress(UUID);
+
+  - changeSet:
+      id: 20260823-fn-create-home-with-owner
+      validCheckSum: 9:6ed966971441bbf90ea055bdd8bfc1d8
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,home,security"
+      comment: "Creates a home together with its first owner through a controlled operation."
+      changes:
+        - sqlFile:
+            path: 006_fn_home_creation.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: |
+            DROP FUNCTION IF EXISTS home.fn_create_home_with_owner(VARCHAR, VARCHAR, VARCHAR, SMALLINT, UUID);
   - changeSet:
       id: 20260823-fn-user-registration
       author: Hidro_Smarth
@@ -100,6 +116,24 @@ databaseChangeLog:
             stripComments: false
       rollback:
         - sql: DROP FUNCTION IF EXISTS user_account.fn_register_user(VARCHAR, VARCHAR);
+
+  - changeSet:
+      id: 20260824-fn-rls-status-checks
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,rls"
+      comment: "Excludes blocked or deleted users, suspended homes and inactive devices from row-level access checks."
+      changes:
+        - sqlFile:
+            path: 009_fn_rls_status_checks.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/009_fn_rls_status_checks.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
   - changeSet:
       id: 20260825-fn-login-attempts
       author: Hidro_Smarth
@@ -218,6 +252,77 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: false
             stripComments: false
+  - changeSet:
+      id: 20260829-fn-home-member-management
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,home,security,rbac"
+      comment: "Adds active home members through an owner- and permission-checked SECURITY DEFINER function."
+      changes:
+        - sqlFile:
+            path: 022_fn_home_member_management.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/022_fn_home_member_management.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20260829-fn-change-home-member-role
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,home,security,rbac"
+      comment: "Allows a home owner to change a member role without modifying the owner role."
+      changes:
+        - sqlFile:
+            path: 023_fn_change_home_member_role.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/023_fn_change_home_member_role.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20260830-fn-remove-home-member
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,home,security,rbac"
+      comment: "Allows a home owner to remove a member without removing the owner."
+      changes:
+        - sqlFile:
+            path: 024_fn_remove_home_member.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/024_fn_remove_home_member.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20260830-fn-home-membership-requests
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,home,security,rbac"
+      comment: "Adds secure home membership request and owner decision flows."
+      changes:
+        - sqlFile:
+            path: 025_fn_request_home_membership.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/025_fn_request_home_membership.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
 
   - changeSet:
       id: 20260901-fn-session-tokens
@@ -323,6 +428,24 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/01_ddl/06_functions/031_fn_timezone_policy_alignment.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260902-fn-role-management
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,rbac"
+      comment: "Adds controlled security-definer functions for functional role management."
+      changes:
+        - sqlFile:
+            path: 034_fn_role_management.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/034_fn_role_management.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
