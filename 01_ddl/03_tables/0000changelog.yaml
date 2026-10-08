@@ -62,3 +62,63 @@ databaseChangeLog:
   # ============================================================
   # DOMINIO 4: DISPOSITIVOS IoT (device)
   # ============================================================
+
+  - changeSet:
+      id: a3bb6b65-efb6-4b6b-b844-dcb34828b365
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,base,device"
+      comment: Creates the baseline tables for the IoT devices domain.
+      changes:
+        - sqlFile:
+            path: 004_Iot_devices.sql
+            relativeToChangelogFile: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/03_tables/004_Iot_devices.rollback.sql
+            relativeToChangelogFile: true
+            stripComments: false
+
+  # ============================================================
+  # DOMINIO 5: CONSUMO Y MONITOREO (consumption)
+  # ============================================================
+
+  - changeSet:
+      id: 723d6e4a-b387-491f-8e9f-ce4d24f12e6a
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,base,consumption"
+      comment: Creates the baseline tables for the consumption domain.
+      changes:
+        - sqlFile:
+            path: 005_Consuption_monitoring.sql
+            relativeToChangelogFile: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/03_tables/005_Consuption_monitoring.rollback.sql
+            relativeToChangelogFile: true
+            stripComments: false
+
+  # ============================================================
+  # DOMINIO 6: ALERTAS, TARIFAS Y CONTROL (alert_rate)
+  # ============================================================
+
+  - changeSet:
+      id: 9db783ad-3984-4085-ad3c-ae9e77af5ab8
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,base,alert"
+      comment: Creates the baseline tables for the alerts and rates domain.
+      changes:
+        - sqlFile:
+            path: 006_Alerts_control.sql
+            relativeToChangelogFile: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/03_tables/006_Alerts_control.rollback.sql
+            relativeToChangelogFile: true
+            stripComments: false
+
+  # ============================================================
+  # 🟡 DOMINIO 7: REPORTES, ANÁLISIS Y SOPORTE (analytics_support)
+  # ============================================================
