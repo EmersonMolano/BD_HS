@@ -14,3 +14,21 @@ databaseChangeLog:
             path: ../../05_rollbacks/03_dcl/00_roles/001_create_roles.rollback.sql
             relativeToChangelogFile: true
             stripComments: false
+
+  - changeSet:
+      id: 20260906-role-timezone-defaults
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,roles,timezone"
+      comment: "Aligns application, ingest and readonly database sessions to America/Bogota."
+      changes:
+        - sqlFile:
+            path: 003_role_timezone_defaults.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/00_roles/003_role_timezone_defaults.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false

@@ -87,3 +87,324 @@ databaseChangeLog:
             stripComments: false
       rollback:
         - sql: DROP FUNCTION IF EXISTS analytics_support.fn_get_goal_progress(UUID);
+  - changeSet:
+      id: 20260823-fn-user-registration
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,security"
+      comment: "Registers a user through a controlled SECURITY DEFINER function so INSERT RETURNING is not blocked by RLS."
+      changes:
+        - sqlFile:
+            path: 008_fn_user_registration.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: DROP FUNCTION IF EXISTS user_account.fn_register_user(VARCHAR, VARCHAR);
+  - changeSet:
+      id: 20260825-fn-login-attempts
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,security"
+      comment: "Centralizes failed-login counting, lockout and reset behavior."
+      changes:
+        - sqlFile:
+            path: 011_fn_login_attempts.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/011_fn_login_attempts.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260825-fn-registration-normalization
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,security"
+      comment: "Normalizes username and email before registration."
+      changes:
+        - sqlFile:
+            path: 012_fn_registration_normalization.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/012_fn_registration_normalization.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260825-fn-login-attempts-validation
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,security"
+      comment: "Validates the account identifier before recording a login failure."
+      changes:
+        - sqlFile:
+            path: 013_fn_login_attempts_validation.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/013_fn_login_attempts_validation.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260825-fn-sensitive-auth
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,security"
+      comment: "Provides controlled credential and MFA operations without direct table access."
+      changes:
+        - sqlFile:
+            path: 014_fn_sensitive_auth.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/014_fn_sensitive_auth.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260825-fn-rbac
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,security,rbac"
+      comment: "Connects application users with functional permissions through active roles."
+      changes:
+        - sqlFile:
+            path: 015_fn_rbac.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/015_fn_rbac.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260825-secure-materialized-view-functions
+      author: Hidro_Smarth
+      comment: "Exposes materialized-view results only through home-scoped, permission-checked functions."
+      changes:
+        - sqlFile:
+            path: 016_fn_secure_materialized_views.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/016_fn_secure_materialized_views.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260825-registration-flows
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,registration,device"
+      comment: "Assigns HomeUser during registration and registers unlinked devices through controlled functions."
+      changes:
+        - sqlFile:
+            path: 018_fn_registration_flows.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/018_fn_registration_flows.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20260901-fn-session-tokens
+      validCheckSum: 9:ca8499a85a27bbae4d3af2a53771ddf5
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,security,session"
+      comment: "Creates controlled session and refresh-token rotation operations."
+      changes:
+        - sqlFile:
+            path: 027_fn_session_tokens.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/027_fn_session_tokens.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20260901-fn-fix-session-rotation
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,security,session,fix"
+      comment: "Qualifies the session identifier in refresh-token rotation."
+      changes:
+        - sqlFile:
+            path: 028_fn_fix_session_rotation.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/028_fn_fix_session_rotation.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20260901-fn-password-operations
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,security,password"
+      comment: "Creates controlled password change and one-time recovery-token operations."
+      changes:
+        - sqlFile:
+            path: 029_fn_password_operations.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/029_fn_password_operations.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20260901-fn-auth-security-and-device-visibility
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,device,security"
+      comment: "Applies login security state and keeps non-active devices visible to authorized household members."
+      changes:
+        - sqlFile:
+            path: 030_fn_auth_security_and_device_visibility.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/030_fn_auth_security_and_device_visibility.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20260901-fn-timezone-policy-alignment
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,security,timezone,password"
+      comment: "Aligns existing credentials with the active password policy and sets the application session timezone."
+      changes:
+        - sqlFile:
+            path: 031_fn_timezone_policy_alignment.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+  - changeSet:
+      id: 20260901-fn-active-password-policy
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,security,password"
+      comment: "Exposes the active password policy to the backend through a controlled function."
+      changes:
+        - sqlFile:
+            path: 032_fn_active_password_policy.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/032_fn_active_password_policy.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/031_fn_timezone_policy_alignment.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260906-fn-authorization-context
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,rbac"
+      comment: "Exposes only the authenticated user's own functional roles and permissions."
+      changes:
+        - sqlFile:
+            path: 038_fn_authorization_context.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: DROP FUNCTION IF EXISTS user_account.fn_get_my_authorization_context();
+
+  - changeSet:
+      id: 20260906-fn-bootstrap-first-administrator
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,rbac,bootstrap"
+      comment: "Adds an owner-only one-time bootstrap for the first functional Administrator."
+      changes:
+        - sqlFile:
+            path: 039_fn_bootstrap_first_administrator.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: DROP FUNCTION IF EXISTS user_account.fn_bootstrap_first_administrator(UUID);
+
+  - changeSet:
+      id: 20260912-fn-session-management
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,auth,sessions"
+      comment: "Adds ownership-checked session listing and revocation operations without exposing token material."
+      changes:
+        - sqlFile:
+            path: 045_fn_session_management.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/045_fn_session_management.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260913-fn-password-reset-context
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,auth,password-reset"
+      comment: "Returns the email for an active, unused and unexpired password reset token without exposing token data."
+      changes:
+        - sqlFile:
+            path: 048_fn_get_password_reset_email.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/048_fn_get_password_reset_email.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260914-fn-registration-email-verification
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,user_account,security,email"
+      comment: "Registers new accounts as Pending and activates them when the verification token is consumed."
+      changes:
+        - sqlFile:
+            path: 051_fn_registration_email_verification.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/051_fn_registration_email_verification.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
