@@ -1,0 +1,44 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: c9f70605-1403-4021-1000-908070605040
+      author: Hidro_Smarth
+      comment: "Grant schema and object privileges for the application users."
+      changes:
+        - sql: GRANT USAGE ON SCHEMA user_account TO hidro_smart_app;
+        - sql: GRANT USAGE ON SCHEMA preference TO hidro_smart_app;
+        - sql: GRANT USAGE ON SCHEMA home TO hidro_smart_app;
+        - sql: GRANT USAGE ON SCHEMA device TO hidro_smart_app;
+        - sql: GRANT USAGE ON SCHEMA consumption TO hidro_smart_app;
+        - sql: GRANT USAGE ON SCHEMA alert_rate TO hidro_smart_app;
+        - sql: GRANT USAGE ON SCHEMA analytics_support TO hidro_smart_app;
+        - sql: GRANT USAGE ON SCHEMA audit TO hidro_smart_app;
+        - sql: GRANT USAGE ON SCHEMA privacy TO hidro_smart_app;
+        - sql: GRANT USAGE ON SCHEMA user_account TO hidro_smart_readonly;
+        - sql: GRANT USAGE ON SCHEMA preference TO hidro_smart_readonly;
+        - sql: GRANT USAGE ON SCHEMA home TO hidro_smart_readonly;
+        - sql: GRANT USAGE ON SCHEMA device TO hidro_smart_readonly;
+        - sql: GRANT USAGE ON SCHEMA consumption TO hidro_smart_readonly;
+        - sql: GRANT USAGE ON SCHEMA alert_rate TO hidro_smart_readonly;
+        - sql: GRANT USAGE ON SCHEMA analytics_support TO hidro_smart_readonly;
+        - sql: GRANT USAGE ON SCHEMA audit TO hidro_smart_readonly;
+        - sql: GRANT USAGE ON SCHEMA privacy TO hidro_smart_readonly;
+      rollback:
+        - sql: REVOKE USAGE ON SCHEMA user_account FROM hidro_smart_app;
+        - sql: REVOKE USAGE ON SCHEMA preference FROM hidro_smart_app;
+        - sql: REVOKE USAGE ON SCHEMA home FROM hidro_smart_app;
+        - sql: REVOKE USAGE ON SCHEMA device FROM hidro_smart_app;
+        - sql: REVOKE USAGE ON SCHEMA consumption FROM hidro_smart_app;
+        - sql: REVOKE USAGE ON SCHEMA alert_rate FROM hidro_smart_app;
+        - sql: REVOKE USAGE ON SCHEMA analytics_support FROM hidro_smart_app;
+        - sql: REVOKE USAGE ON SCHEMA audit FROM hidro_smart_app;
+        - sql: REVOKE USAGE ON SCHEMA privacy FROM hidro_smart_app;
+        - sql: REVOKE USAGE ON SCHEMA user_account FROM hidro_smart_readonly;
+        - sql: REVOKE USAGE ON SCHEMA preference FROM hidro_smart_readonly;
+        - sql: REVOKE USAGE ON SCHEMA home FROM hidro_smart_readonly;
+        - sql: REVOKE USAGE ON SCHEMA device FROM hidro_smart_readonly;
+        - sql: REVOKE USAGE ON SCHEMA consumption FROM hidro_smart_readonly;
+        - sql: REVOKE USAGE ON SCHEMA alert_rate FROM hidro_smart_readonly;
+        - sql: REVOKE USAGE ON SCHEMA analytics_support FROM hidro_smart_readonly;
+        - sql: REVOKE USAGE ON SCHEMA audit FROM hidro_smart_readonly;
+        - sql: REVOKE USAGE ON SCHEMA privacy FROM hidro_smart_readonly;
