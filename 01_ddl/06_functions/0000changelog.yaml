@@ -1,6 +1,6 @@
 databaseChangeLog:
   # ============================================================
-  # FUNCIONES â€” HIDRO SMART
+  # FUNCIONES — HIDRO SMART
   # ============================================================
 
   # 1. Security Helpers (user_account + home)
@@ -678,6 +678,24 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/01_ddl/06_functions/040_fn_auth_and_iot_ingest.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260912-fn-auth-hardening
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,function,security,auth,rbac"
+      comment: "Fixes authorization ordering for users without roles and encapsulates owned logout."
+      changes:
+        - sqlFile:
+            path: 041_fn_auth_hardening.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/041_fn_auth_hardening.rollback.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
