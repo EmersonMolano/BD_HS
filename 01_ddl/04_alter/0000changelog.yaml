@@ -313,6 +313,41 @@ databaseChangeLog:
             stripComments: false
 
   - changeSet:
+      id: 20260912-iot-sensor-reading-ingest
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,consumption,iot,integrity"
+      comment: "Adds the MQTT idempotency key without creating or modifying materialized views."
+      changes:
+        - sqlFile:
+            path: 021_iot_sensor_reading_ingest.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260912-device-ingest-hardening
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,device,consumption,iot,integrity"
+      comment: "Prevents multiple active home assignments and stores validated sensor metrics with measured and received timestamps."
+      changes:
+        - sqlFile:
+            path: 022_device_ingest_hardening.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/022_device_ingest_hardening.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/021_iot_sensor_reading_ingest.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
       id: 20260914-email-verification-pending
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,alter,user_account,security,email"
