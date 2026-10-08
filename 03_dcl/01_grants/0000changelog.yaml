@@ -855,3 +855,33 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20260916-home-billing-references-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,home,billing,tariffs,security"
+      comment: "Grants the application role controlled access to home billing references and profile functions."
+      changes:
+        - sqlFile:
+            path: 050_home_billing_references.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260916-home-mini-budget-grant
+      author: Hidro_Smarth
+      labels: "BD-01-dev,dcl,grants,home,billing,budget,mini,security"
+      comment: "Grants the mini household profile and budget status functions to the application role."
+      changes:
+        - sqlFile:
+            path: 051_home_mini_budget.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/051_home_mini_budget.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
