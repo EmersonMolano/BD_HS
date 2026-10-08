@@ -42,3 +42,17 @@ databaseChangeLog:
         - sql: REVOKE USAGE ON SCHEMA analytics_support FROM hidro_smart_readonly;
         - sql: REVOKE USAGE ON SCHEMA audit FROM hidro_smart_readonly;
         - sql: REVOKE USAGE ON SCHEMA privacy FROM hidro_smart_readonly;
+  - changeSet:
+      id: 20260823-registration-function-grant
+      author: Hidro_Smarth
+      comment: "Allows the application to register users through the controlled function instead of direct INSERT RETURNING."
+      changes:
+        - sql: |
+            REVOKE INSERT ON user_account.user_account FROM hidro_smart_app;
+            GRANT EXECUTE ON FUNCTION user_account.fn_register_user(VARCHAR, VARCHAR) TO hidro_smart_app;
+            GRANT EXECUTE ON FUNCTION home.fn_create_home_with_owner(VARCHAR, VARCHAR, VARCHAR, SMALLINT, UUID) TO hidro_smart_app;
+      rollback:
+        - sql: |
+            REVOKE EXECUTE ON FUNCTION user_account.fn_register_user(VARCHAR, VARCHAR) FROM hidro_smart_app;
+            REVOKE EXECUTE ON FUNCTION home.fn_create_home_with_owner(VARCHAR, VARCHAR, VARCHAR, SMALLINT, UUID) FROM hidro_smart_app;
+            GRANT INSERT ON user_account.user_account TO hidro_smart_app;
