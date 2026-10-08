@@ -490,3 +490,27 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20260916-home-usage-and-billing-reference
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,home,billing,tariffs"
+      comment: "Adds residential/commercial/industrial home classification and national billing references."
+      changes:
+        - sqlFile:
+            path: 031_home_usage_and_billing_reference.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+
+  - changeSet:
+      id: 20260916-home-mini-reference-profile
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,alter,home,billing,mini"
+      comment: "Adds household size and person-level consumption reference metadata for HidroSmart mini."
+      changes:
+        - sqlFile:
+            path: 032_home_mini_reference_profile.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
