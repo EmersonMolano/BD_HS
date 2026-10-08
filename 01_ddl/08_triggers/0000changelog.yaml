@@ -51,6 +51,22 @@ databaseChangeLog:
             DROP FUNCTION IF EXISTS user_account.fn_audit_user_account();
 
   - changeSet:
+      id: c2d1e3f4-5b6a-4d8e-9f0c-7a8b2c3d4e61
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,base,triggers,consumption"
+      comment: Creates the post-insert consumption validation trigger.
+      changes:
+        - sqlFile:
+            path: 003_trg_after_reading_insert.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sql: |
+            DROP TRIGGER IF EXISTS trg_after_reading_insert ON consumption.sensor_reading;
+            DROP FUNCTION IF EXISTS consumption.fn_after_reading_insert();
+
+  - changeSet:
       id: 20260825-home-owner-invariant
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,trigger,home,integrity"
@@ -68,6 +84,22 @@ databaseChangeLog:
             splitStatements: false
             stripComments: false
   - changeSet:
+      id: 20260825-optimize-reading-alert-dedup
+      author: Hidro_Smarth
+      comment: "Removes recorded_at date casts from alert deduplication queries."
+      changes:
+        - sqlFile:
+            path: 007_trg_after_reading_insert_optimized.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/08_triggers/007_trg_after_reading_insert_optimized.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
       id: 20260826-device-status-change-timestamp
       author: Hidro_Smarth
       labels: "BD-01-dev,ddl,trigger,device,integrity"
@@ -81,6 +113,40 @@ databaseChangeLog:
       rollback:
         - sqlFile:
             path: ../../05_rollbacks/01_ddl/08_triggers/008_trg_device_status_change.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260826-alert-period-deduplication
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,trigger,alert_rate,integrity"
+      comment: "Uses daily, monthly and daily leak windows according to each alert rule."
+      changes:
+        - sqlFile:
+            path: 009_trg_after_reading_alert_periods.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/08_triggers/009_trg_after_reading_alert_periods.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+  - changeSet:
+      id: 20260906-alert-trigger-consistency
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,trigger,alert_rate,integrity"
+      comment: "Uses the same rule thresholds and deterministic event deduplication as the periodic alert generator."
+      changes:
+        - sqlFile:
+            path: 010_trg_after_reading_alert_consistency.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: 009_trg_after_reading_alert_periods.sql
             relativeToChangelogFile: true
             splitStatements: false
             stripComments: false
