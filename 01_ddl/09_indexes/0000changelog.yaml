@@ -169,3 +169,20 @@ databaseChangeLog:
             path: ../../05_rollbacks/01_ddl/09_indexes/009_idx_privacy.rollback.sql
             relativeToChangelogFile: true
             stripComments: false
+  - changeSet:
+      id: 20260826-mv-concurrent-refresh-keys
+      author: Hidro_Smarth
+      labels: "BD-01-dev,ddl,index,materialized-view,performance"
+      comment: "Adds the unique keys required for concurrent materialized-view refreshes."
+      changes:
+        - sqlFile:
+            path: 012_mv_concurrent_refresh_keys.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/09_indexes/012_mv_concurrent_refresh_keys.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
