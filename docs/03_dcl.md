@@ -1,125 +1,216 @@
-# DCL: roles, permisos y RLS
+# 03_dcl: roles, privilegios y políticas de acceso
 
-La capa `03_dcl` controla acceso al motor PostgreSQL, objetos y filas.
+## Propósito
 
-## Roles PostgreSQL
+La capa 03_dcl controla quién se conecta a PostgreSQL, qué puede ejecutar cada
+rol técnico y qué filas puede ver o modificar. Complementa la seguridad del
+backend: no sustituye autorización de API, sino que reduce el impacto de un
+error y aísla los datos de usuarios y hogares.
 
-- `hidro_smart_app`: backend y operaciones normales.
-- `hidro_smart_ingest`: ingesta IoT; solo conecta y ejecuta la función protegida
-  `device.fn_ingest_sensor_reading(...)`, sin `INSERT` directo sobre
-  `consumption.sensor_reading`.
-- `hidro_smart_readonly`: consultas y reportes de solo lectura.
+Sus roles principales son:
 
-Los roles de negocio `Administrator`, `HomeUser` y `Guest` viven en `user_account.role`. La administración de tickets usa el permiso `tickets.manage` de `Administrator`; no se mezclan automáticamente con roles PostgreSQL.
+- hidro_smart_app: operaciones normales del backend.
+- hidro_smart_ingest: recepción mínima de telemetría IoT.
+- hidro_smart_readonly: lectura de reportes autorizados.
 
-## Registro y hogares
+## Orden de carga real
 
-El backend registra usuarios mediante:
+El archivo BD_HS/changelog-master.yaml carga 00_roles antes de 01_ddl, porque
+algunas migraciones necesitan que hidro_smart_app ya exista. Luego carga DDL,
+DML y, por último, BD_HS/03_dcl/changelog.yaml.
 
-```sql
-SELECT user_account.fn_register_user('usuario', 'correo@dominio.com');
-```
+El changelog propio de 03_dcl carga:
 
-La función devuelve el UUID, crea la cuenta como `Pending` y no exige
-`app.user_id` durante el registro. Después de consumir el token de verificación
-de correo la cuenta pasa a `Active`. Para crear el primer propietario:
+1. 01_grants
+2. 02_policies
 
-```sql
-SELECT home.fn_create_home_with_owner('Casa', 'Dirección', 'Ciudad', 3, '<UUID_USUARIO>');
-```
+Cada carpeta usa 0000changelog.yaml como manifiesto de Liquibase. Los
+contextos y labels ayudan a identificar cambios DCL, pero no reemplazan la
+validación de permisos ni las pruebas de acceso por rol.
 
-## RLS
+## 00_roles: cuentas técnicas de PostgreSQL
 
-El backend establece el usuario actual por conexión:
+Esta carpeta no está incluida desde 03_dcl/changelog.yaml: se incluye
+directamente desde el changelog maestro antes del DDL.
 
-```sql
-SELECT set_config('app.user_id', '<UUID_USUARIO>', true);
-```
+- **001_create_roles.sql:** crea, si no existen, los roles técnicos
+  hidro_smart_app y hidro_smart_readonly con atributos de conexión limitados.
+- **002_create_ingest_role.sql:** crea el rol hidro_smart_ingest sin
+  privilegios administrativos, sin herencia y con límite de conexiones.
+- **003_role_timezone_defaults.sql:** configura la zona horaria operativa por
+  defecto en los tres roles técnicos.
 
-Las políticas limitan hogares, dispositivos, lecturas, alertas, reportes, recomendaciones y tickets. La ingesta usa un rol separado y una política exclusiva de inserción.
+Su 0000changelog.yaml define los tres changesets y sus reversas disponibles.
 
-El rol readonly no tiene acceso directo a las tablas operativas: sus privilegios efectivos quedan limitados a las cinco vistas materializadas agregadas de reportes. Si se requiere un usuario de reportes por hogar, debe crearse otra politica con filtro por membresia y una vista o funcion especifica.
+## 01_grants: principio de mínimo privilegio
 
-## Buenas prácticas
+Los scripts de esta carpeta conceden solo lo necesario y revocan accesos
+amplios o públicos. El backend debe usar funciones SQL controladas en vez de
+CRUD global sobre tablas sensibles.
 
-- Mantener contraseñas fuera del changelog.
-- No conceder superusuario.
-- Revisar grants de nuevas tablas.
-- Probar RLS con una sesión autenticada y otra sin `app.user_id`.
-## Seguridad efectiva de la aplicación
+- **001_grants_app_user.sql:** da a hidro_smart_app acceso base de conexión,
+  esquemas y objetos necesarios para iniciar la aplicación.
+- **002_grants_materialized_views.sql:** permite leer vistas materializadas
+  autorizadas de consumo, alertas y dispositivos desde app y readonly.
+- **003_grants_ingest.sql:** concede a hidro_smart_ingest conexión, uso del
+  esquema consumption e inserción inicial de lecturas.
+- **004_security_hardening.sql:** revoca lecturas sobre credenciales y tokens,
+  y restringe funciones sensibles que no deben quedar expuestas.
+- **005_grant_hourly_mv.sql:** habilita lectura de la vista materializada
+  horaria para app y readonly.
+- **006_grant_period_cost.sql:** concede ejecución de la función que calcula
+  costo de consumo por período.
+- **007_grant_login_security.sql:** deja las funciones de intentos de login
+  accesibles solo para hidro_smart_app, no para PUBLIC.
+- **008_grant_least_privilege_auth_rbac.sql:** restringe tablas de
+  credenciales, MFA, auditoría y RBAC; deja al backend las lecturas y
+  funciones estrictamente requeridas.
+- **009_fn_cost_rollback_guard.sql:** concede al backend la función de costo
+  con su firma compatible.
+- **010_revoke_sensitive_token_crud.sql:** elimina CRUD directo del backend
+  sobre tokens de restablecimiento, sesiones y datos relacionados.
+- **011_grant_app_table_privileges.sql:** revoca privilegios globales y
+  vuelve a conceder acceso directo únicamente a tablas seleccionadas.
+- **012_grant_registration_flows.sql:** protege funciones de registro y
+  permite al backend ejecutar solamente los flujos controlados de registro de
+  usuario y dispositivo.
+- **013_grant_device_management.sql:** concede la función que comprueba si el
+  usuario puede administrar un dispositivo.
+- **014_readonly_reporting_privileges.sql:** restringe hidro_smart_readonly a
+  vistas, funciones y agregados aptos para reportes.
+- **015_revoke_public_security_definers.sql:** quita de PUBLIC las funciones
+  SECURITY DEFINER y vuelve a otorgar solo las necesarias al rol de aplicación.
+- **016_restrict_privacy_table_writes.sql:** impide que la aplicación borre
+  consentimientos o solicitudes ARCO y restringe escrituras sensibles.
+- **017_revoke_scope_helpers_public.sql:** evita que helpers de alcance por
+  hogar o dispositivo puedan invocarse desde PUBLIC.
+- **018_secure_mv_access.sql:** elimina acceso directo amplio a vistas
+  materializadas multi-hogar y orienta el acceso hacia funciones filtradas.
+- **019_grant_ingest_references.sql:** concede REFERENCES sobre la relación
+  hogar-dispositivo para validar la FK compuesta durante la ingesta.
+- **020_ingest_minimum_privileges.sql:** ajusta a lo mínimo los permisos de
+  ingestión para validar referencias e invocar la función de aceptación.
+- **021_device_history_insert.sql:** permite al backend insertar historial de
+  dispositivo.
+- **022_device_status_update_function.sql:** concede la función controlada
+  para actualizar estado del dispositivo.
+- **023_session_token_functions.sql:** permite crear, rotar y revocar sesiones
+  mediante funciones, sin exponer tablas de sesión.
+- **024_password_functions.sql:** permite las funciones controladas de
+  credenciales, cambio de contraseña y restablecimiento.
+- **025_auth_security_function.sql:** concede consulta del estado de
+  seguridad de autenticación.
+- **026_active_password_policy_function.sql:** concede lectura de la política
+  de contraseña activa mediante función.
+- **027_alert_generation_function.sql:** permite generar eventos de alerta a
+  través de la función de dominio.
+- **028_role_management_functions.sql:** controla las funciones de consulta,
+  asignación y retiro de roles de usuario.
+- **029_preference_catalog_read.sql:** concede lectura de los catálogos
+  públicos de idioma y moneda; no da acceso a preferencias ajenas.
+- **030_audit_read_function.sql:** habilita la función paginada y controlada
+  de lectura de auditoría.
+- **031_authorization_context_function.sql:** concede al backend la función
+  protegida que establece o consulta el contexto de autorización de la sesión.
+- **032_final_security_hardening.sql:** aplica revocaciones finales sobre
+  objetos sensibles para cerrar permisos directos no deseados.
+- **033_auth_and_iot_functions.sql:** habilita funciones de verificación de
+  correo, sesiones y operaciones IoT que el backend necesita.
+- **034_auth_hardening_functions.sql:** permite revocar de forma controlada
+  sesiones refresh pertenecientes al usuario.
+- **035_iot_ingest_metrics_function.sql:** concede la función de ingesta que
+  recibe métricas completas de un sensor.
+- **036_device_status_ingest_function.sql:** concede la función que registra
+  estados MQTT del dispositivo.
+- **037_session_management_functions.sql:** permite listar, cerrar una sesión
+  propia o cerrar las demás sesiones del usuario.
+- **038_account_lifecycle_functions.sql:** habilita cambios controlados de
+  estado y eliminación de cuentas.
+- **039_list_managed_users_function.sql:** permite al administrador listar
+  usuarios administrables mediante función filtrada.
+- **040_telemetry_ingest_function.sql:** actualiza el permiso de ejecución de
+  la firma vigente de ingesta de telemetría.
+- **041_revoke_ingest_direct_insert.sql:** retira a ingest el INSERT directo
+  en sensor_reading; la telemetría debe entrar por la función protegida.
+- **042_password_reset_context.sql:** habilita recuperar el correo asociado a
+  un token de restablecimiento con una función controlada.
+- **043_actuator_command.sql:** protege tablas y funciones de actuadores, y
+  concede a la app el acceso mínimo para registrar y consultar comandos.
+- **044_actuator_timeout.sql:** permite ejecutar el cierre por tiempo de
+  comandos de actuador pendientes.
+- **045_device_registration_and_linking.sql:** habilita el registro con
+  ubicación y la vinculación controlada de dispositivo a hogar.
+- **046_consumption_series.sql:** concede la función que entrega series de
+  consumo por hogar y período.
+- **047_device_provisioning.sql:** permite registrar y actualizar el estado
+  de aprovisionamiento de un dispositivo.
+- **048_device_hardware_claim.sql:** permite reclamar un equipo
+  aprovisionado usando su hardwareId.
+- **049_device_wifi_status.sql:** permite guardar el SSID activo sin exponer
+  ni almacenar la contraseña Wi-Fi.
+- **050_home_billing_references.sql:** habilita crear hogares con perfil de
+  facturación y sincronizar sus referencias tarifarias.
+- **051_home_mini_budget.sql:** concede las funciones de perfil HidroSmart
+  mini y consulta de estado de presupuesto.
+- **052_managed_user_overview.sql:** habilita el resumen administrativo de un
+  usuario gestionado.
+- **053_home_members_list.sql:** permite listar nombres y roles de miembros
+  de un hogar autorizado.
+- **054_device_link_by_hardware.sql:** habilita vincular un dispositivo
+  activo a un hogar por su hardwareId.
+- **055_device_delete_unlinked.sql:** permite eliminar de forma controlada un
+  dispositivo que ya no está vinculado a un hogar.
 
-hidro_smart_app no recibe CRUD global. El changeset 20260825-explicit-app-table-privileges revoca los privilegios heredados y concede acceso tabla por tabla.
+El archivo 0000changelog.yaml registra los cambios anteriores en orden
+numérico. Cuando un changeset cuenta con rollback externo, referencia el
+archivo correspondiente en 05_rollbacks/03_dcl/01_grants; algunos rollbacks
+pequeños están definidos en línea dentro del changelog.
 
-El backend (`hidro_smart_app`) no consulta directamente las vistas materializadas; debe usar las funciones seguras. El rol técnico `hidro_smart_readonly` sí puede consultar únicamente esas cinco vistas agregadas para reportes internos:
+## 02_policies: Row-Level Security
 
-- consumption.fn_get_home_monthly_consumption(uuid)
-- consumption.fn_get_home_hourly_consumption(uuid)
-- alert_rate.fn_get_home_pending_alerts(uuid)
-- device.fn_get_home_active_devices(uuid)
-- analytics_support.fn_get_home_recommendation_summary(uuid)
+RLS limita las filas que un rol puede leer o modificar incluso si posee
+permiso sobre la tabla. Las políticas se basan en el usuario de aplicación y
+en su pertenencia vigente a cada hogar.
 
-Cada función exige el permiso RBAC correspondiente y membresía activa en el hogar indicado.
-## Registro seguro y rollbacks
+- **001_rls_policies.sql:** activa RLS y define el conjunto inicial de
+  políticas para cuentas, hogares, dispositivos, lecturas y auditoría.
+- **002_readonly_rls_policies.sql:** permite al rol de reportes leer solo las
+  filas y agregados autorizados bajo RLS.
+- **003_rls_domain_tables.sql:** amplía RLS a preferencias, membresías,
+  metas, alertas, reportes, tickets y demás tablas de dominio.
+- **004_ingest_rls_hardening.sql:** restringe la inserción de telemetría a
+  dispositivos activos asociados al hogar recibido.
+- **005_rbac_policy_enforcement.sql:** sustituye políticas permisivas por
+  políticas que además verifican permisos funcionales RBAC.
+- **006_device_update_scope.sql:** exige devices.manage y membresía activa del
+  hogar antes de actualizar un dispositivo.
+- **007_private_domain_rls.sql:** protege perfiles privados, historial IoT y
+  tablas de privacidad que reciben privilegios directos de la app.
+- **008_ingest_security_definer.sql:** reemplaza políticas temporales de
+  ingestión por la validación de una función SECURITY DEFINER.
+- **009_device_history_insert.sql:** limita la inserción de historial de
+  dispositivo a gestores autorizados con contexto de usuario.
+- **019_ticket_response_owner_visibility.sql:** permite al dueño del ticket
+  leer el historial completo de respuestas de su ticket.
+- **020_cross_tenant_hardening.sql:** cierra accesos cruzados entre hogares o
+  tickets al endurecer reportes, notificaciones, respuestas y solicitudes
+  ARCO.
+- **021_actuator_command_rls.sql:** aísla el estado y los comandos de
+  actuadores por membresía activa de hogar.
 
-`hidro_smart_app` ejecuta los flujos controlados, pero no recibe CRUD global sobre tablas sensibles ni `INSERT` directo para asignar roles o registrar dispositivos:
+El archivo 0000changelog.yaml registra estas políticas y sus rollbacks. Los
+números 010 a 018 no están presentes como archivos físicos en esta carpeta; no
+deben inventarse ni referenciarse hasta que exista una migración real.
 
-```sql
-SELECT user_account.fn_register_user('usuario', 'correo@dominio.com');
-SELECT device.fn_register_device_with_location('DEV-001', 'Medidor principal', 'WaterMeter', 'Baño principal');
-```
+## Verificación recomendada
 
-El primer flujo asigna `HomeUser`. El segundo exige `devices.manage`; despues de obtener el UUID, el backend debe asociar el dispositivo a un hogar mediante `home.home_device`.
+Después de cambiar esta capa, prueba al menos:
 
-Los grants de estos flujos estan en `03_dcl/01_grants/012_grant_registration_flows.sql` y su rollback en `05_rollbacks/03_dcl/01_grants/012_grant_registration_flows.rollback.sql`.
-## Alcance de actualización de dispositivos
-
-Para actualizar un dispositivo, `hidro_smart_app` necesita simultáneamente:
-
-1. el permiso RBAC `devices.manage`; y
-2. pertenecer a un hogar activo que tenga una asociación activa con ese dispositivo.
-
-La política `device_backend_update` aplica ambas condiciones mediante `device.fn_can_manage_device(...)`. Por esto, tener el permiso por sí solo no permite modificar dispositivos de otros hogares.
-
-El rol `hidro_smart_readonly` quedó limitado a las cinco vistas materializadas agregadas para reportes. No tiene acceso directo a las tablas operativas ni a datos sensibles de autenticación, tokens, MFA, consentimiento o auditoría.
-
-## Consulta administrativa de auditoría
-
-La aplicación no recibe `SELECT` sobre `audit.audit_log`. El acceso administrativo se expone mediante `user_account.fn_list_audit_logs(...)`, una función `SECURITY DEFINER` con filtros por acción, tabla y rango de fechas, paginación y orden descendente por fecha.
-
-El backend ejecuta esa función a través de `GET /api/v1/audit/logs`. El permiso `audit.read` está asignado únicamente al rol funcional `Administrator`; la función vuelve a verificarlo usando el contexto `app.user_id`. El changeset de la función es `20260903-fn-list-audit-logs` y su grant es `20260903-audit-read-function-grant`.
-## RLS adicional para datos privados
-
-Ademas de los hogares, dispositivos y consumos, el changeset `20260827-private-domain-rls` protege perfiles, funciones de miembros, solicitudes de ingreso, historiales IoT, consentimientos y solicitudes ARCO.
-
-Las funciones SECURITY DEFINER de calculo exigen permiso RBAC y membresia activa cuando la llamada proviene de `hidro_smart_app`. Las llamadas internas del rol `hidro_smart_ingest` se mantienen para que la ingesta pueda generar alertas sin exponer consultas directas al backend.
-
-Los consentimientos son append-only desde la aplicacion y las solicitudes ARCO no se pueden borrar directamente.
-## Acceso seguro a vistas materializadas
-
-El changeset 20260827-secure-materialized-view-access revoca el SELECT directo de hidro_smart_app y hidro_smart_readonly sobre las cinco vistas materializadas, porque contienen agregados de varios hogares. El backend debe usar las funciones filtradas por p_home_id:
-
-- consumption.fn_get_home_monthly_consumption(uuid)
-- consumption.fn_get_home_hourly_consumption(uuid)
-- alert_rate.fn_get_home_pending_alerts(uuid)
-- device.fn_get_home_active_devices(uuid)
-- analytics_support.fn_get_home_recommendation_summary(uuid)
-
-El rollback correspondiente restaura el SELECT directo únicamente como reversión explícita.
-## Correcciones del flujo IoT y registro de dispositivos
-
-El changeset 20260828-ingest-references otorga únicamente REFERENCES sobre home.home_device al rol hidro_smart_ingest. Esto permite que PostgreSQL valide el FK compuesto de sensor_reading durante la ingesta, sin concederle lectura ni escritura general sobre home_device.
-
-El changeset 20260828-homeuser-device-permission asigna devices.manage al rol funcional HomeUser. El usuario normal puede registrar un dispositivo mediante device.fn_register_device_with_location o vincularlo mediante device.fn_link_device_to_home; la asociación y las actualizaciones continúan limitadas por permisos, titularidad, membresía activa y RLS.
-## Estado de permisos para MQTT (2026-09-23)
-
-La ingesta MQTT ya está conectada al backend mediante `IngestReading` y `PostgresTelemetryRepository`. Los changesets `20260913-telemetry-ingest-function-grant` y `20260913-revoke-ingest-direct-insert` dejan al rol `hidro_smart_ingest` con ejecución de `device.fn_ingest_sensor_reading(...)`, sin `INSERT` directo sobre `consumption.sensor_reading`. La función `SECURITY DEFINER` mantiene la validación de dispositivo, asociación activa, rangos e idempotencia. No se deben ampliar grants de forma manual.
-
-El `reading.handler` ya está activo. Los permisos mínimos quedaron versionados
-en Liquibase: `hidro_smart_ingest` ejecuta la función protegida de ingesta y no
-recibe `INSERT` directo sobre `consumption.sensor_reading`. Se conserva la
-resolución segura de `deviceCode`, la asociación `home_device`, RLS y la
-separación respecto de `hidro_smart_app`.
-
-La precisión de litros y m³ ya quedó ampliada y versionada para el caudalímetro.
-Permanece pendiente validar el flujo con un ESP32 real; no se deben ampliar
-grants manualmente.
+1. hidro_smart_app puede ejecutar los flujos autorizados y no leer tablas
+   sensibles directamente.
+2. hidro_smart_ingest no puede insertar telemetría fuera de la función
+   permitida ni consultar datos de hogares.
+3. hidro_smart_readonly no puede modificar datos.
+4. Owner, Guest y Administrator no ven ni editan filas de hogares ajenos.
+5. liquibase validate y status --verbose muestran el orden esperado antes de
+   aplicar update.
