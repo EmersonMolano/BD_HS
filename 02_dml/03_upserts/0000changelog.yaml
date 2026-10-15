@@ -1,1 +1,18 @@
-﻿databaseChangeLog: []
+databaseChangeLog:
+  - changeSet:
+      id: 20261011-preassigned-esp32-device-codes
+      author: HidroSmart
+      labels: "dml,upsert,device,iot,provisioning"
+      comment: "Registers the three logical ESP32 codes available for household linking."
+      changes:
+        - sqlFile:
+            path: 001_preassigned_esp32_device_codes.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/02_dml/03_upserts/001_preassigned_esp32_device_codes.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
