@@ -40,7 +40,7 @@ Los códigos lógicos preasignados están en `02_dml/03_upserts`; se usan una ve
 por placa y no reemplazan el `hardwareId` físico.
 
 Para backup y recuperación consulta
-[../../docs/respaldo-postgresql.md](../../docs/respaldo-postgresql.md).
+[guía de respaldo y recuperación PostgreSQL](https://github.com/joseale879/PT_HS/blob/hu-15-dev/docs/respaldo-postgresql.md).
 
 ## Guías detalladas por capa
 
@@ -55,3 +55,12 @@ Para backup y recuperación consulta
   recuperación de usuario y etiquetas de versión fuera del despliegue normal.
 - [05_rollbacks: reversión controlada](05_rollbacks.md). Cataloga los 194
   scripts de reversión externos y sus precauciones de uso.
+
+## Guías transversales
+
+- [06_modelo-entidad-relacion](06_modelo-entidad-relacion.md): mapa conceptual
+  de identidades, hogares, dispositivos, lecturas, alertas y soporte.
+- [07_rls-y-seguridad](07_rls-y-seguridad.md): roles técnicos, contexto de
+  usuario, aislamiento RLS y pruebas negativas.
+- [08_indices-y-retencion](08_indices-y-retencion.md): familias de índices,
+  agregados, procesos de limpieza observados y asuntos de retención pendientes.
