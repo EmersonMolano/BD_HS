@@ -9,8 +9,8 @@ databaseChangeLog:
             relativeToChangelogFile: true
             stripComments: false
       rollback:
-        - sql: REVOKE CONNECT ON DATABASE hidro_smart FROM hidro_smart_app;
-        - sql: REVOKE CONNECT ON DATABASE hidro_smart FROM hidro_smart_readonly;
+        - sql: REVOKE CONNECT ON DATABASE postgres FROM hidro_smart_app;
+        - sql: REVOKE CONNECT ON DATABASE postgres FROM hidro_smart_readonly;
         - sql: REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA user_account, preference, home, device, consumption, alert_rate, analytics_support, audit, privacy FROM hidro_smart_app;
         - sql: REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA user_account, preference, home, device, consumption, alert_rate, analytics_support, audit, privacy FROM hidro_smart_app;
         - sql: REVOKE USAGE ON SCHEMA user_account, preference, home, device, consumption, alert_rate, analytics_support, audit, privacy FROM hidro_smart_app;
