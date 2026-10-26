@@ -24,6 +24,16 @@ docker compose --env-file .env --profile tooling run --rm liquibase status --ver
 docker compose --env-file .env --profile tooling run --rm liquibase update
 ```
 
+Para preparar una base local desde cero, el script
+`scripts/start-local.ps1` levanta PostgreSQL, crea los roles técnicos y aplica
+las migraciones con Liquibase en ese orden:
+
+```powershell
+.\scripts\start-local.ps1
+```
+
+El script no modifica ningún archivo `.env` y no ejecuta rollbacks.
+
 No edites un changeset aplicado. Para cambiar el esquema crea un changeset
 nuevo, actualiza su changelog correspondiente y valida en una base local nueva.
 
