@@ -2,7 +2,7 @@
 -- PERMISOS PARA EL USUARIO DE APLICACIÓN
 -- ============================================================
 -- Conectar a la base de datos
-GRANT CONNECT ON DATABASE hidro_smart TO hidro_smart_app;
+GRANT CONNECT ON DATABASE postgres TO hidro_smart_app;
 
 -- Uso de esquemas
 GRANT USAGE ON SCHEMA user_account TO hidro_smart_app;
@@ -40,7 +40,7 @@ GRANT USAGE ON ALL SEQUENCES IN SCHEMA privacy TO hidro_smart_app;
 -- ============================================================
 -- PERMISOS PARA EL USUARIO DE SOLO LECTURA (reportes)
 -- ============================================================
-GRANT CONNECT ON DATABASE hidro_smart TO hidro_smart_readonly;
+GRANT CONNECT ON DATABASE postgres TO hidro_smart_readonly;
 
 GRANT USAGE ON SCHEMA user_account TO hidro_smart_readonly;
 GRANT USAGE ON SCHEMA preference TO hidro_smart_readonly;
@@ -62,4 +62,3 @@ GRANT SELECT ON ALL TABLES IN SCHEMA alert_rate TO hidro_smart_readonly;
 GRANT SELECT ON ALL TABLES IN SCHEMA analytics_support TO hidro_smart_readonly;
 GRANT SELECT ON ALL TABLES IN SCHEMA audit TO hidro_smart_readonly;
 GRANT SELECT ON ALL TABLES IN SCHEMA privacy TO hidro_smart_readonly;
-
