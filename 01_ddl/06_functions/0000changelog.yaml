@@ -1083,3 +1083,75 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20261030-fn-home-default-alerts
+      author: HidroSmart
+      labels: "ddl,function,home,alerts,defaults,measurement-toggle-v1"
+      comment: "Creates editable daily and monthly alert defaults for newly created homes."
+      changes:
+        - sqlFile:
+            path: 064_fn_home_creation_default_alerts.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/064_fn_home_creation_default_alerts.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20261030-fn-record-device-measurement-state
+      author: HidroSmart
+      labels: "ddl,function,device,iot,measurement,measurement-toggle-v1,status"
+      comment: "Persists the ESP32 confirmed metering state and rejects stale status events."
+      changes:
+        - sqlFile:
+            path: 065_fn_record_device_measurement_state.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/065_fn_record_device_measurement_state.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20261030-fn-leak-watch-measurement-paused
+      author: HidroSmart
+      labels: "ddl,function,device,iot,measurement,leak-watch,alerts,measurement-toggle-v1"
+      comment: "Detects continuous flow from sensor pulses while metered consumption is paused."
+      changes:
+        - sqlFile:
+            path: 066_fn_leak_watch_measurement_paused.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/066_fn_leak_watch_measurement_paused.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+
+  - changeSet:
+      id: 20261030-fn-default-leak-detection-rule
+      author: HidroSmart
+      labels: "ddl,function,home,device,iot,leak-watch,alerts,defaults,measurement-toggle-v1"
+      comment: "Adds an active 30-minute leak rule for existing and newly created homes."
+      changes:
+        - sqlFile:
+            path: 067_fn_default_leak_detection_rule.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/06_functions/067_fn_default_leak_detection_rule.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false
