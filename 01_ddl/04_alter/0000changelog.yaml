@@ -538,3 +538,21 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20261030-device-measurement-state
+      author: HidroSmart
+      labels: "ddl,alter,device,iot,measurement,measurement-toggle-v1"
+      comment: "Stores the confirmed metering state for each physical IoT device."
+      changes:
+        - sqlFile:
+            path: 034_device_measurement_state.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/01_ddl/04_alter/034_device_measurement_state.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
