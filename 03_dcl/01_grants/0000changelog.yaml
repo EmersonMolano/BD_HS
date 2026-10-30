@@ -987,3 +987,21 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: false
+
+  - changeSet:
+      id: 20261030-device-measurement-state-grant
+      author: HidroSmart
+      labels: "dcl,grants,device,iot,measurement,measurement-toggle-v1,security"
+      comment: "Allows the backend role to persist the ESP32 confirmed metering state."
+      changes:
+        - sqlFile:
+            path: 056_device_measurement_state.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
+      rollback:
+        - sqlFile:
+            path: ../../05_rollbacks/03_dcl/01_grants/056_device_measurement_state.rollback.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
